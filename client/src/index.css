@@ -1,3 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.public-sans {
+  font-family: "Public Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@media print {
+  body {
+    margin: 0;
+  }
+
+  .pdf-page {
+    margin: 0;
+    padding: 0;
+    page-break-after: always;
+  }
+}
