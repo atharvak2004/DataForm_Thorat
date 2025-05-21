@@ -1,27 +1,21 @@
-import React, { useState } from "react";
-import { PDFViewer } from "@react-pdf/renderer";
-import CombinedReport from "../components/indusindBankNormal/CombinedReport";
-import ReportForm from "../components/ReportForm";
+import React from "react";
+import { Link } from "react-router-dom";
 
 function Home() {
-  const [reportData, setReportData] = useState(null);
-
-  const handleBack = () => setReportData(null); 
-
   return (
-    <div>
-      {!reportData ? (
-        <ReportForm onSubmit={setReportData} />
-      ) : (
-        <>
-          <button onClick={handleBack} style={{ margin: "10px", padding: "8px 16px" }}>
-            ← Back
-          </button>
-          <PDFViewer width="100%" height="1000">
-            <CombinedReport data={reportData} />
-          </PDFViewer>
-        </>
-      )}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-100 p-10">
+      <h1 className="text-4xl font-bold mb-8">Vehicle Report Generator</h1>
+      <p className="text-xl mb-4">Choose a template to get started:</p>
+
+      <div className="flex flex-col md:flex-row gap-6">
+        <Link to="/indusind" className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition" >
+          IndusInd Bank Report
+        </Link>
+
+        <Link to="/indusindtractor" className="bg-green-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-green-700 transition">
+          IndusInd Bank Tractor Report
+        </Link>
+      </div>
     </div>
   );
 }

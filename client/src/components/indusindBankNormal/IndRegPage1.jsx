@@ -3,7 +3,7 @@ import { Document, Page, View, Text, Image, StyleSheet } from '@react-pdf/render
 const styles = StyleSheet.create({
     page: {
         fontSize: 10,
-        padding: 10,
+        padding: 40,
         lineHeight: 1.2,
         backgroundColor: 'white',
         width: '210mm',
@@ -13,10 +13,10 @@ const styles = StyleSheet.create({
         border: '2pt solid black',
         padding: 8,
         flex: 1,
-    },  
+    },
     header: {
         flexDirection: 'row',
-        marginBottom: 10,
+        marginBottom: 8,
         alignItems: 'center',
     },
     qrCode: {
@@ -29,28 +29,36 @@ const styles = StyleSheet.create({
     },
     mainTitle: {
         fontSize: 18,
-        marginBottom: 8,
+        marginBottom: 6,
         fontWeight: 'bold',
     },
     subText: {
         fontSize: 14,
         color: '#444',
-        marginBottom: 4,
+        marginBottom: 2,
     },
     section: {
         border: '1px solid #000',
-        marginTop: 4,
+        marginTop: 2,
         padding: 4,
     },
     sectionHeader: {
         fontSize: 14,
-        marginBottom: 6,
+        marginBottom: 4,
         backgroundColor: '#f0f0f0',
         padding: 4,
     },
+    tableRow: {
+        flexDirection: 'row',
+        borderBottom: '1px solid #ddd',
+    },
+    tableCell: {
+        padding: 1.5,
+        borderRight: '1px solid #ddd',
+    },
     gridRow: {
         flexDirection: 'row',
-        marginBottom: 4,
+        marginBottom: 3,
     },
     gridLabel: {
         width: '30%',
@@ -62,8 +70,8 @@ const styles = StyleSheet.create({
     twoColGrid: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 4,
-        marginRight:5,
+        marginBottom: 3,
+        marginRight: 5,
     },
     col: {
         width: '48%',
@@ -82,12 +90,13 @@ const styles = StyleSheet.create({
     verticalBorder: {
         borderRight: '1px solid #000',
         paddingRight: 25,
-        paddingLeft:10,
+        paddingLeft: 10,
     },
     salesPersonName: {
         width: '70%',
-        textAlign:'left',
+        textAlign: 'left',
     },
+
 });
 
 export function IndRegPage1({ data }) {
@@ -105,12 +114,8 @@ export function IndRegPage1({ data }) {
                             101, Shilpshri Apartment, Kailas Nagar, Latur-413512 {"\n"}
                             Mob: 8275599131 | Email: piyushjoshisla@gmail.com
                         </Text>
+                        <Text style={{ fontSize: 10, }}>BENEFICIARY NUMBER:- BEN244790</Text>
                     </View>
-                </View>
-
-                {/* Beneficiary Number */}
-                <View style={{ marginBottom: 4, textAlign: 'letf' }}>
-                    <Text style={{ fontSize: 16, marginBottom: 4 }}>BENEFICIARY NUMBER:- BEN244790</Text>
                 </View>
 
                 {/* Valuation Report */}
@@ -138,7 +143,7 @@ export function IndRegPage1({ data }) {
                 {/* Vehicle Particulars */}
                 <View style={styles.section}>
                     <Text style={styles.sectionHeader}>A. Vehicle Particulars (Physical):</Text>
-                    {[ 
+                    {[
                         ['1.', 'Borrower Name', data.borrowerName],
                         ['2.', 'Address', data.address],
                         ['3.', 'Mobile No', data.mobileNo],
@@ -148,9 +153,10 @@ export function IndRegPage1({ data }) {
                         ['7.', 'Engine Number', data.engineNo],
                         ['8.', 'Chassis Number', data.chassisNo],
                     ].map(([num, label, value]) => (
-                        <View style={styles.gridRow} key={num}>
-                            <Text style={styles.gridLabel}>{num} {label}</Text>
-                            <Text style={styles.gridValue}>{value}</Text>
+                        <View key={num} style={styles.tableRow}>
+                            <Text style={[styles.tableCell, { width: '5%' }]}>{num}</Text>
+                            <Text style={[styles.tableCell, { width: '25%' }]}>{label}</Text>
+                            <Text style={[styles.tableCell, { width: '70%' }]}>{value}</Text>
                         </View>
                     ))}
                 </View>
@@ -158,7 +164,7 @@ export function IndRegPage1({ data }) {
                 {/* Registration Particulars */}
                 <View style={styles.section}>
                     <Text style={styles.sectionHeader}>B. Registration Particulars (As per RC):</Text>
-                    {[ 
+                    {[
                         ['1.', 'Vehicle No.', data.vehicleNo],
                         ['2.', 'Make And Model', `${data.makerName} ${data.model}`],
                         ['3.', 'Date of registration', data.registrationDate],
@@ -176,9 +182,10 @@ export function IndRegPage1({ data }) {
                         ['15.', 'Fitness Valid up to', data.fitnessValidity],
                         ['16.', 'Hypothecation If Any', data.hypothecation],
                     ].map(([num, label, value]) => (
-                        <View style={styles.gridRow} key={num}>
-                            <Text style={styles.gridLabel}>{num} {label}</Text>
-                            <Text style={styles.gridValue}>{value}</Text>
+                        <View key={num} style={styles.tableRow}>
+                            <Text style={[styles.tableCell, { width: '5%' }]}>{num}</Text>
+                            <Text style={[styles.tableCell, { width: '25%' }]}>{label}</Text>
+                            <Text style={[styles.tableCell, { width: '70%' }]}>{value}</Text>
                         </View>
                     ))}
                 </View>
@@ -186,17 +193,20 @@ export function IndRegPage1({ data }) {
                 {/* Inspection Details */}
                 <View style={styles.section}>
                     <Text style={styles.sectionHeader}>C. Inspection Details</Text>
-                    {[ 
+                    {[
                         ['1.', 'Inspection Location', data.inspectionLocation],
                         ['2.', 'Inspection Date', data.inspectionDate],
                         ['3.', 'Inspection Time', data.inspectionTime],
                     ].map(([num, label, value]) => (
-                        <View style={styles.gridRow} key={num}>
-                            <Text style={styles.gridLabel}>{num} {label}</Text>
-                            <Text style={styles.gridValue}>{value}</Text>
+                        <View key={num} style={styles.tableRow}>
+                            <Text style={[styles.tableCell, { width: '5%' }]}>{num}</Text>
+                            <Text style={[styles.tableCell, { width: '25%' }]}>{label}</Text>
+                            <Text style={[styles.tableCell, { width: '70%' }]}>{value}</Text>
                         </View>
                     ))}
                 </View>
+
+
 
                 <Image src="/assets/Stamp_img.png" style={styles.stamp} />
             </View>

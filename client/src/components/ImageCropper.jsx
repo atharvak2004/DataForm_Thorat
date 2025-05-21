@@ -5,7 +5,7 @@ import { Slider } from '@mui/material';
 export default function ImageCropper({ image, onCropDone, onCropCancel }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [aspect, setAspect] = useState(4 / 3); // ✅ Initialize aspect ratio
+  const [aspect, setAspect] = useState(4 / 3); 
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   const handleCropComplete = useCallback((_, croppedPixels) => {
@@ -61,8 +61,8 @@ export default function ImageCropper({ image, onCropDone, onCropCancel }) {
       </div>
 
       <div style={{ marginTop: '1rem' }}>
-        <button type="button" onClick={handleCrop}>Crop & Save</button>
-        <button type="button" onClick={onCropCancel} style={{ marginLeft: '1rem' }}>Cancel</button>
+        <button type="button" onClick={handleCrop} className="bg-blue-400 hover:bg-blue-600 w-4/12 rounded-xl p-2 mt-2 mr-4">Crop & Save</button>
+        <button type="button" onClick={onCropCancel} className="bg-blue-400 hover:bg-blue-600 w-4/12 rounded-xl p-2 mt-2 mr-4">Cancel</button>
       </div>
     </div>
   );

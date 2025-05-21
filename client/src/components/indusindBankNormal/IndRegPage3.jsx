@@ -3,7 +3,7 @@ import { Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer';
 const styles = StyleSheet.create({
     page: {
         fontSize: 10,
-        padding: 10,
+        padding: 40,
         lineHeight: 1.2,
         backgroundColor: 'white',
         width: '210mm',
@@ -85,19 +85,6 @@ function IndRegPage3({ data }) {
     return (
         <Page size="A4" style={styles.page}>
             <View style={styles.outerBorder}>
-                {/* Header Section */}
-                <View style={styles.header}>
-                    <Image src="/assets/QR_img.jpg" style={styles.qrCode} />
-                    <View style={styles.headerText}>
-                        <Text style={styles.mainTitle}>PIYUSH S. JOSHI</Text>
-                        <Text style={styles.subText}>Surveyor & Loss Assessor (Motor)</Text>
-                        <Text style={styles.subText}>I.R.D.A. Govt of India Lic No. 121775 Valid Upto:13/12/2026</Text>
-                        <Text style={{ fontSize: 12 }}>
-                            101, Shilpshri Apartment, Kailas Nagar, Latur-413512{"\n"}
-                            Mob: 8275599131 | Email: piyushjoshisla@gmail.com
-                        </Text>
-                    </View>
-                </View>
 
                 {/* Reference Section */}
                 <View style={styles.section}>

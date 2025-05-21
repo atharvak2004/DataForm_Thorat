@@ -1,19 +1,19 @@
 import React, { useState } from "react";
-import ImageCropper from "./ImageCropper";
-import FileInput from "./FileInput";
+import ImageCropper from "../ImageCropper";
+import FileInput from "../FileInput";
 
-export default function ReportForm({ onSubmit }) {
+export default function IndRegReportForm({ onSubmit }) {
   const [image, setImage] = useState('');
   const [currentPage, setCurrentPage] = useState('choose-img');
   const [imageAfterCrop, setImageAfterCrop] = useState('');
-
   const [formData, setFormData] = useState({
     referenceNo: "",
     reportDate: "",
     salesPerson: "",
+
     borrowerName: "",
     address: "",
-    mobileNo: "",
+    mobileNo: "-",
     vehicleNo: "",
     makerName: "",
     model: "",
@@ -39,15 +39,15 @@ export default function ReportForm({ onSubmit }) {
     inspectionTime: "",
 
 
-    permitType: "",
-    permitValidUpto: "",
-    taxPaidUpto: "",
+    permitType: "-",
+    permitValidUpto: "-",
+    taxPaidUpto: "-",
 
-    insurerName: "",
-    policyFrom: "",
-    policyUpto: "",
-    policyType: "",
-    idv: "",
+    insurerName: "PLEASE VERIFY",
+    policyFrom: "PLEASE VERIFY",
+    policyUpto: "PLEASE VERIFY",
+    policyType: "PLEASE VERIFY",
+    idv: "-",
 
 
     engineCondition: "GOOD",
@@ -67,8 +67,10 @@ export default function ReportForm({ onSubmit }) {
     docPermit: "",
     docTax: "",
 
-    onlineStatus: "",
+    onlineStatus: "-",
+
     valuation: "",
+
     chassisImage: "",
     image1: "",
     image2: "",
@@ -146,13 +148,13 @@ export default function ReportForm({ onSubmit }) {
       <h2 className="text-3xl mb-10">INDUSIND BANK LTD. REPORT</h2>
       <form onSubmit={handleSubmit} className="flex flex-col lg:w-5/12 space-y-3 text-left p-5 bg-slate-200">
         <label htmlFor="referenceNo">Reference No:</label>
-        <input className='border border-black rounded-lg p-2' id="referenceNo" name="referenceNo" placeholder="IND/2025/1" value={formData.referenceNo} onChange={handleChange} />
+        <input className='border border-red-600 rounded-lg p-2' id="referenceNo" name="referenceNo" placeholder="IND/2025/1" value={formData.referenceNo} onChange={handleChange} />
 
         <label htmlFor="reportDate">Report Date:</label>
-        <input className='border border-black rounded-lg p-2' type="date" id="reportDate" name="reportDate" placeholder="Report Date" value={formData.reportDate} onChange={handleChange} />
+        <input className='border border-red-600 rounded-lg p-2' type="date" id="reportDate" name="reportDate" placeholder="Report Date" value={formData.reportDate} onChange={handleChange} />
 
         <label htmlFor="salesPerson">Name of Sales Person:</label>
-        <select className='border border-black rounded-lg p-2' id="salesPerson" name="salesPerson" value={formData.salesPerson} onChange={handleChange}>
+        <select className='border border-red-600 rounded-lg p-2' id="salesPerson" name="salesPerson" value={formData.salesPerson} onChange={handleChange}>
           <option value="">-</option>
           <option value="MR. ARJUN PAWAR (IMFSR25404A)">MR. ARJUN PAWAR (IMFSR25404A)</option>
           <option value="MR. TUSHAR K PAUL (R09629)">MR. TUSHAR K PAUL (R09629)</option>
@@ -171,19 +173,19 @@ export default function ReportForm({ onSubmit }) {
         <span className="flex flex-col space-y-3 text-left p-5 border border-black bg-white">
           <h2 className="text-3xl font-bold mb-5 ">Section A: Vehicle Particulars: Physical</h2>
           <label htmlFor="borrowerName">Borrower's Name:</label>
-          <input className='border border-black rounded-lg p-2' name='borrowerName' id="borrowerName" placeholder="Borrower's Name" value={formData.borrowerName} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' name='borrowerName' id="borrowerName" placeholder="Borrower's Name" value={formData.borrowerName} onChange={handleChange} />
 
           <label htmlFor="address">Address:</label>
-          <input className='border border-black rounded-lg p-2' id="address" name="address" placeholder="Address" value={formData.address} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="address" name="address" placeholder="Address" value={formData.address} onChange={handleChange} />
 
           <label htmlFor="mobileNo">Mobile No.:</label>
           <input className='border border-black rounded-lg p-2' id="mobileNo" name="mobileNo" placeholder="Mobile No." value={formData.mobileNo} onChange={handleChange} />
 
           <label htmlFor="vehicleNo">Vehicle No:</label>
-          <input className='border border-black rounded-lg p-2' id='vehicleNo' name="vehicleNo" placeholder="Vehicle No." value={formData.vehicleNo} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id='vehicleNo' name="vehicleNo" placeholder="Vehicle No." value={formData.vehicleNo} onChange={handleChange} />
 
           <label htmlFor="makerName">Maker's Name:</label>
-          <select className='border border-black rounded-lg p-2' id="makerName" name="makerName" value={formData.makerName} onChange={handleChange}>
+          <select className='border border-red-600 rounded-lg p-2' id="makerName" name="makerName" value={formData.makerName} onChange={handleChange}>
             <option value="">-</option>
             <option value="TATA MOTORS LTD">TATA MOTORS LTD</option>
             <option value="MAHINDRA AND MAHINDRA">MAHINDRA AND MAHINDRA</option>
@@ -203,53 +205,53 @@ export default function ReportForm({ onSubmit }) {
 
 
           <label htmlFor="model">Model:</label>
-          <input className='border border-black rounded-lg p-2' id="model" name="model" placeholder="model" value={formData.model} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="model" name="model" placeholder="model" value={formData.model} onChange={handleChange} />
 
           <label htmlFor="engineNo">Engine No:</label>
-          <input className='border border-black rounded-lg p-2' id="engineNo" name="engineNo" placeholder="engineNo" value={formData.engineNo} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="engineNo" name="engineNo" placeholder="engineNo" value={formData.engineNo} onChange={handleChange} />
 
           <label htmlFor="chassisNo">Chassis No:</label>
-          <input className='border border-black rounded-lg p-2' id="chassisNo" name="chassisNo" placeholder="chassisNo" value={formData.chassisNo} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="chassisNo" name="chassisNo" placeholder="chassisNo" value={formData.chassisNo} onChange={handleChange} />
         </span>
 
         <span className="flex flex-col space-y-3 text-left p-5 border border-black bg-white">
           <h2 className="text-3xl font-bold mb-5 ">Section B: Registration Particulars (As per RC):</h2>
 
           <label htmlFor="registrationDate">Registration Date:</label>
-          <input className='border border-black rounded-lg p-2' id="registrationDate" name="registrationDate" placeholder="Registration Date" value={formData.registrationDate} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="registrationDate" name="registrationDate" placeholder="Registration Date" value={formData.registrationDate} onChange={handleChange} />
 
           <label htmlFor="ownerSerialNo">Owner Serial No.:</label>
-          <input className='border border-black rounded-lg p-2' type="number" id="ownerSerialNo"  name="ownerSerialNo" placeholder="owner Serial No." value={formData.ownerSerialNo} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' type="number" id="ownerSerialNo" name="ownerSerialNo" placeholder="owner Serial No." value={formData.ownerSerialNo} onChange={handleChange} />
 
           <label htmlFor="yearOfManufacture">Year of Manufacture:</label>
-          <input className='border border-black rounded-lg p-2' id="yearOfManufacture" name="yearOfManufacture" placeholder="yearOfManufacture" value={formData.yearOfManufacture} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="yearOfManufacture" name="yearOfManufacture" placeholder="yearOfManufacture" value={formData.yearOfManufacture} onChange={handleChange} />
 
           <label htmlFor="rlwGvw">Rlw / Gvw:</label>
-          <input className='border border-black rounded-lg p-2' type="number" id="rlwGvw" name="rlwGvw" placeholder="rlwGvw" value={formData.rlwGvw} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' type="number" id="rlwGvw" name="rlwGvw" placeholder="rlwGvw" value={formData.rlwGvw} onChange={handleChange} />
 
           <label htmlFor="unladenWeight">Unladen-Weight:</label>
-          <input className='border border-black rounded-lg p-2' type="number" id="unladenWeight" name="unladenWeight" placeholder="unladenWeight" value={formData.unladenWeight} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' type="number" id="unladenWeight" name="unladenWeight" placeholder="unladenWeight" value={formData.unladenWeight} onChange={handleChange} />
 
           <label htmlFor="fuelUsed">Fuel Used:</label>
-          <input className='border border-black rounded-lg p-2' id="fuelUsed" name="fuelUsed" placeholder="fuelUsed" value={formData.fuelUsed} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="fuelUsed" name="fuelUsed" placeholder="fuelUsed" value={formData.fuelUsed} onChange={handleChange} />
 
           <label htmlFor="seatingCapacity">Seating Capacity:</label>
-          <input className='border border-black rounded-lg p-2' type="number" id="seatingCapacity" name="seatingCapacity" placeholder="seatingCapacity" value={formData.seatingCapacity} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' type="number" id="seatingCapacity" name="seatingCapacity" placeholder="seatingCapacity" value={formData.seatingCapacity} onChange={handleChange} />
 
           <label htmlFor="classOfVehicle">Class of Vehicle:</label>
-          <input className='border border-black rounded-lg p-2' id="classOfVehicle" name="classOfVehicle" placeholder="classOfVehicle" value={formData.classOfVehicle} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="classOfVehicle" name="classOfVehicle" placeholder="classOfVehicle" value={formData.classOfVehicle} onChange={handleChange} />
 
           <label htmlFor="typeOfBody">Type of Body:</label>
-          <input className='border border-black rounded-lg p-2' id="typeOfBody" name="typeOfBody" placeholder="typeOfBody" value={formData.typeOfBody} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="typeOfBody" name="typeOfBody" placeholder="typeOfBody" value={formData.typeOfBody} onChange={handleChange} />
 
           <label htmlFor="color">Color:</label>
-          <input className='border border-black rounded-lg p-2' id="color"  name="color" placeholder="color" value={formData.color} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="color" name="color" placeholder="color" value={formData.color} onChange={handleChange} />
 
           <label htmlFor="fitnessValidity">Fitness Validity:</label>
-          <input className='border border-black rounded-lg p-2' id="fitnessValidity" name="fitnessValidity" placeholder="fitnessValidity" value={formData.fitnessValidity} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="fitnessValidity" name="fitnessValidity" placeholder="fitnessValidity" value={formData.fitnessValidity} onChange={handleChange} />
 
           <label htmlFor="hypothecation">Hypothecation:</label>
-          <input className='border border-black rounded-lg p-2' id="hypothecation" name="hypothecation" placeholder="hypothecation" value={formData.hypothecation} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="hypothecation" name="hypothecation" placeholder="hypothecation" value={formData.hypothecation} onChange={handleChange} />
 
         </span>
 
@@ -257,13 +259,13 @@ export default function ReportForm({ onSubmit }) {
           <h2 className="text-3xl font-bold mb-5 ">Section C: Inspection Details</h2>
 
           <label htmlFor="inspectionLocation">Inspection Location:</label>
-          <input className='border border-black rounded-lg p-2' id="inspectionLocation" name="inspectionLocation" placeholder="inspectionLocation" value={formData.inspectionLocation} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="inspectionLocation" name="inspectionLocation" placeholder="inspectionLocation" value={formData.inspectionLocation} onChange={handleChange} />
 
           <label htmlFor="inspectionDate">Inspection Date:</label>
-          <input className='border border-black rounded-lg p-2' id="inspectionDate"  name="inspectionDate" placeholder="inspectionDate" value={formData.inspectionDate} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="inspectionDate" name="inspectionDate" placeholder="inspectionDate" value={formData.inspectionDate} onChange={handleChange} />
 
           <label htmlFor="inspectionTime">Inspection Time:</label>
-          <input className='border border-black rounded-lg p-2' id="inspectionTime" name="inspectionTime" placeholder="inspectionTime" value={formData.inspectionTime} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2' id="inspectionTime" name="inspectionTime" placeholder="inspectionTime" value={formData.inspectionTime} onChange={handleChange} />
 
         </span>
 
@@ -281,10 +283,10 @@ export default function ReportForm({ onSubmit }) {
           </select>
 
           <label htmlFor="permitValidUpto">Permit Valid Upto:</label>
-          <input className='border border-black rounded-lg p-2'id="permitValidUpto" name="permitValidUpto" placeholder="permitValidUpto" value={formData.permitValidUpto} onChange={handleChange} />
+          <input className='border border-black rounded-lg p-2' id="permitValidUpto" name="permitValidUpto" placeholder="permitValidUpto" value={formData.permitValidUpto} onChange={handleChange} />
 
           <label htmlFor="taxPaidUpto">Tax Paid Upto:</label>
-          <select className='border border-black rounded-lg p-2' id="taxPaidUpto" name="taxPaidUpto" value={formData.taxPaidUpto} onChange={handleChange}>
+          <select className='border border-red-600 rounded-lg p-2' id="taxPaidUpto" name="taxPaidUpto" value={formData.taxPaidUpto} onChange={handleChange}>
             <option value="">-</option>
             <option value="OTT">OTT</option>
             <option value="LTT">LTT</option>
@@ -295,8 +297,9 @@ export default function ReportForm({ onSubmit }) {
           <h2 className="text-3xl font-bold mb-5 ">Section E: Insurance Details</h2>
 
           <label htmlFor="insurerName">Name of Insurer</label>
-          <select className='border border-black rounded-lg p-2' id="insurerName" name="insurerName" value={formData.insurerName} onChange={handleChange}>
+          <select className='border border-red-600 rounded-lg p-2' id="insurerName" name="insurerName" value={formData.insurerName} onChange={handleChange}>
             <option value="">-</option>
+            <option value="PLEASE VERITFY">PLEASE VERIFY</option>
             <option value="Acko General Insurance Ltd">Acko General Insurance Ltd</option>
             <option value="Agriculture Insurance Company of India Ltd.">Agriculture Insurance Company of India Ltd.</option>
             <option value="Bajaj Allianz General Insurance Co. Ltd.">Bajaj Allianz General Insurance Co. Ltd.</option>
@@ -332,10 +335,10 @@ export default function ReportForm({ onSubmit }) {
           <input className='border border-black rounded-lg p-2' id="policyUpto" name="policyUpto" placeholder="policyUpto" value={formData.policyUpto} onChange={handleChange} />
 
           <label htmlFor="policyType">Policy Type:</label>
-          <input className='border border-black rounded-lg p-2' id="policyType"  name="policyType" placeholder="policyType" value={formData.policyType} onChange={handleChange} />
+          <input className='border border-black rounded-lg p-2' id="policyType" name="policyType" placeholder="policyType" value={formData.policyType} onChange={handleChange} />
 
           <label htmlFor="idv">IDV:</label>
-          <input className='border border-black rounded-lg p-2'id="idv" name="idv" placeholder="idv" value={formData.idv} onChange={handleChange} />
+          <input className='border border-black rounded-lg p-2' id="idv" name="idv" placeholder="idv" value={formData.idv} onChange={handleChange} />
         </span>
 
         <span className="flex flex-col space-y-3 text-left p-5 border border-black bg-white">
@@ -427,21 +430,21 @@ export default function ReportForm({ onSubmit }) {
           <h2 className="text-3xl font-bold mb-5 ">Section G: Documentation Provided</h2>
 
           <label htmlFor="docAadhar">Aadhar Card:</label>
-          <select className='border border-black rounded-lg p-2' id="docAadhar" name="docAadhar" value={formData.docAadhar} onChange={handleChange}>
+          <select className='border border-red-600 rounded-lg p-2' id="docAadhar" name="docAadhar" value={formData.docAadhar} onChange={handleChange}>
             <option value="">-</option>
             <option value="YES">YES</option>
             <option value="NO">NO</option>
           </select>
 
           <label htmlFor="docRC">RC:</label>
-          <select className='border border-black rounded-lg p-2' id="docRC" name="docRC" value={formData.docRC} onChange={handleChange}>
+          <select className='border border-red-600 rounded-lg p-2' id="docRC" name="docRC" value={formData.docRC} onChange={handleChange}>
             <option value="">-</option>
             <option value="YES">YES</option>
             <option value="NO">NO</option>
           </select>
 
           <label htmlFor="docInsurance">Insurance:</label>
-          <select className='border border-black rounded-lg p-2' id="docInsurance" name="docInsurance" value={formData.docInsurance} onChange={handleChange}>
+          <select className='border border-red-600 rounded-lg p-2' id="docInsurance" name="docInsurance" value={formData.docInsurance} onChange={handleChange}>
             <option value="">-</option>
             <option value="YES">YES</option>
             <option value="NO">NO</option>
@@ -507,7 +510,7 @@ export default function ReportForm({ onSubmit }) {
           <h2 className="text-3xl font-bold mb-5 ">Section J: Online Status of Vehicle</h2>
 
           <label htmlFor="salesPerson">Online Status:</label>
-          <select className='border border-black rounded-lg p-2 ' id="onlineStatus" name="onlineStatus" value={formData.onlineStatus} onChange={handleChange}>
+          <select className='border border-red-600 rounded-lg p-2 ' id="onlineStatus" name="onlineStatus" value={formData.onlineStatus} onChange={handleChange}>
             <option value="">-</option>
             <option value="ACTIVE">ACTIVE</option>
             <option value="BLACKLISTED">BLACKLISTED</option>
@@ -518,7 +521,7 @@ export default function ReportForm({ onSubmit }) {
           <h2 className="text-3xl font-bold mb-5 ">Section K: Vehicle Valuation</h2>
 
           <label htmlFor="valuation">Valuation:</label>
-          <input className='border border-black rounded-lg p-2 ' type="number" id="valuation"  name="valuation" placeholder="valuation" value={formData.valuation} onChange={handleChange} />
+          <input className='border border-red-600 rounded-lg p-2 ' type="number" id="valuation" name="valuation" placeholder="valuation" value={formData.valuation} onChange={handleChange} />
         </span>
 
         <span className="flex flex-col space-y-3 text-left p-5 border border-black bg-white">
@@ -535,7 +538,7 @@ export default function ReportForm({ onSubmit }) {
           <h4 className="text-2xl font-semibold ">Image 4 (Page4)</h4>
           <FileInput onImageSelected={(selectedImg) => onImageSelected(selectedImg, 'image4')} />
 
-            <hr className="h-2"/>
+          <hr className="h-2" />
 
           <h4 className="text-2xl font-semibold ">Image 1 (Page5)</h4>
           <FileInput onImageSelected={(selectedImg) => onImageSelected(selectedImg, 'image5')} />
@@ -553,7 +556,7 @@ export default function ReportForm({ onSubmit }) {
           Generate PDF
         </button>
       </form>
-
+      
     </div>
   );
 }

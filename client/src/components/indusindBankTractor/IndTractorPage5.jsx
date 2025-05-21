@@ -3,7 +3,7 @@ import { Page, View, Image, StyleSheet } from "@react-pdf/renderer";
 const styles = StyleSheet.create({
   page: {
     fontSize: 10,
-    padding: 40,
+    padding: 33,
     lineHeight: 1.2,
     backgroundColor: 'white',
     width: '210mm',
@@ -53,21 +53,21 @@ const styles = StyleSheet.create({
   },
 });
 
-const IndRegPage4 = ({ data }) => (
+const IndTractorPage5 = ({ data }) => (
   <Page size="A4" style={styles.page}>
     <View style={styles.outerBorder}>
       <View style={styles.gridContainer}>
         <View style={styles.imageBox}>
-          <Image style={styles.image} src={data.image1} />
+          <Image style={styles.image} src={data.image5} />
         </View>
         <View style={styles.imageBox}>
-          <Image style={styles.image} src={data.image2} />
+          <Image style={styles.image} src={data.image6} />
         </View>
         <View style={styles.imageBox}>
-          <Image style={styles.image} src={data.image3} />
+          <Image style={styles.image} src={data.image7} />
         </View>
         <View style={styles.imageBox}>
-          <Image style={styles.image} src={data.image4} />
+          <Image style={styles.image} src={data.image8} />
         </View>
       </View>
 
@@ -78,4 +78,4 @@ const IndRegPage4 = ({ data }) => (
   </Page>
 );
 
-export default IndRegPage4;
+export default IndTractorPage5;

@@ -1,4 +1,4 @@
-// CombinedReport.jsx
+
 import { Document } from '@react-pdf/renderer';
 import IndRegPage1 from './IndRegPage1';
 import IndRegPage2 from './IndRegPage2';
