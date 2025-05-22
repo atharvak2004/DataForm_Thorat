@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imageBox: {
-    width: "48%",
+    width: "50%", 
     aspectRatio: 4 / 3,
     marginBottom: 10,
     position: "relative",

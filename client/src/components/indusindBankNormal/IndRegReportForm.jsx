@@ -5,7 +5,8 @@ import FileInput from "../FileInput";
 export default function IndRegReportForm({ onSubmit }) {
   const [image, setImage] = useState('');
   const [currentPage, setCurrentPage] = useState('choose-img');
-  const [imageAfterCrop, setImageAfterCrop] = useState('');
+  const [selectedImageKey, setSelectedImageKey] = useState('');
+  const [imagesAfterCrop, setImagesAfterCrop] = useState({});
   const [formData, setFormData] = useState({
     referenceNo: "",
     reportDate: "",
@@ -81,66 +82,51 @@ export default function IndRegReportForm({ onSubmit }) {
     image7: "",
     image8: "",
   });
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const onChassisImageSelected = (selectedImg) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  const onGeneralImageSelected = (selectedImg, imageKey) => {
     setImage(selectedImg);
+    setSelectedImageKey(imageKey);
     setCurrentPage("crop-img");
   };
 
-  const onCropDone = (imgCroppedArea) => {
-    if (!imgCroppedArea || !imgCroppedArea.width || !imgCroppedArea.height) {
-      console.error("Invalid crop area:", imgCroppedArea);
-      return;
-    }
-
-    const canvas = document.createElement("canvas");
-    canvas.width = imgCroppedArea.width;
-    canvas.height = imgCroppedArea.height;
-    const ctx = canvas.getContext("2d");
-
-    const imageObj = new Image();
-    imageObj.src = image;
-
-    imageObj.onload = function () {
-      ctx.drawImage(
-        imageObj,
-        imgCroppedArea.x,
-        imgCroppedArea.y,
-        imgCroppedArea.width,
-        imgCroppedArea.height,
-        0,
-        0,
-        imgCroppedArea.width,
-        imgCroppedArea.height
-      );
-
-      const base64Image = canvas.toDataURL("image/jpeg");
-      setImageAfterCrop(base64Image);
-      setFormData((prev) => ({ ...prev, chassisImage: base64Image }));
-      setCurrentPage("img-cropped");
-    };
+  const onChassisImageSelected = (selectedImg) => {
+    setImage(selectedImg);
+    setSelectedImageKey('chassisImage');
+    setCurrentPage("crop-img");
   };
 
   const onCropCancel = () => {
     setCurrentPage("choose-img");
     setImage('');
+    setSelectedImageKey('');
   };
 
-  const onImageSelected = (selectedImg, imageKey) => {
-    setFormData((prev) => ({
-      ...prev,
-      [imageKey]: selectedImg,
-    }));
-  };
+  const onCropDone = (croppedImage) => {
+    if (selectedImageKey) {
+      setFormData(prev => ({
+        ...prev,
+        [selectedImageKey]: croppedImage
+      }));
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
+      if (selectedImageKey !== 'chassisImage') {
+        setImagesAfterCrop(prev => ({
+          ...prev,
+          [selectedImageKey]: croppedImage
+        }));
+      }
+    }
+    setCurrentPage("choose-img");
+    setImage('');
+    setSelectedImageKey('');
   };
 
   return (
@@ -477,32 +463,44 @@ export default function IndRegReportForm({ onSubmit }) {
           <h2 className="text-3xl font-bold mb-5 ">Section I: Chassis Number Impression/ Photo</h2>
 
           <h4 className="text-2xl font-semibold ">Chassis Number Image</h4>
-          {currentPage === "choose-img" ? (
-            <FileInput onImageSelected={onChassisImageSelected} />
-          ) : currentPage === "crop-img" ? (
+          {currentPage === "crop-img" ? (
             <ImageCropper
               image={image}
               onCropDone={onCropDone}
               onCropCancel={onCropCancel}
             />
-          ) : (
+          ) : formData.chassisImage ? (
             <div>
               <div>
                 <img
-                  src={imageAfterCrop}
+                  src={formData.chassisImage}
                   alt="Cropped Preview"
                   className="cropped-img"
                   style={{ maxWidth: "200px" }}
                 />
                 <p>Preview of cropped chassis image</p>
               </div>
-              <button type="button" onClick={() => setCurrentPage("crop-img")} className="bg-blue-400 hover:bg-blue-600 w-4/12 rounded-xl p-2 mt-2 mr-4">
+              <button
+                type="button"
+                onClick={() => setCurrentPage("crop-img")}
+                className="bg-blue-400 hover:bg-blue-600 w-4/12 rounded-xl p-2 mt-2 mr-4"
+              >
                 Crop Again
               </button>
-              <button type="button" onClick={() => { setCurrentPage("choose-img"); setImage(""); }} className="bg-blue-400 hover:bg-blue-600 w-4/12 rounded-xl p-2 mt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentPage("choose-img");
+                  setImage("");
+                  setFormData((prev) => ({ ...prev, chassisImage: "" }));
+                }}
+                className="bg-blue-400 hover:bg-blue-600 w-4/12 rounded-xl p-2 mt-2"
+              >
                 Upload New Image
               </button>
             </div>
+          ) : (
+            <FileInput onImageSelected={onChassisImageSelected} />
           )}
         </span>
 
@@ -526,37 +524,71 @@ export default function IndRegReportForm({ onSubmit }) {
 
         <span className="flex flex-col space-y-3 text-left p-5 border border-black bg-white">
           <h2 className="text-3xl font-bold mb-5 ">Images Section:</h2>
-          <h4 className="text-2xl font-semibold ">Image 1 (Page4)</h4>
-          <FileInput onImageSelected={(selectedImg) => onImageSelected(selectedImg, 'image1')} />
+          {[...Array(8)].map((_, i) => {
+            const key = `image${i + 1}`;
+            const page = i < 4 ? 'Page4' : 'Page5';
 
-          <h4 className="text-2xl font-semibold ">Image 2 (Page4)</h4>
-          <FileInput onImageSelected={(selectedImg) => onImageSelected(selectedImg, 'image2')} />
+            return (
+              <div key={key}>
+                <h4 className="text-2xl font-semibold">Image {i % 4 + 1} ({page})</h4>
 
-          <h4 className="text-2xl font-semibold ">Image 3 (Page4)</h4>
-          <FileInput onImageSelected={(selectedImg) => onImageSelected(selectedImg, 'image3')} />
-
-          <h4 className="text-2xl font-semibold ">Image 4 (Page4)</h4>
-          <FileInput onImageSelected={(selectedImg) => onImageSelected(selectedImg, 'image4')} />
-
-          <hr className="h-2" />
-
-          <h4 className="text-2xl font-semibold ">Image 1 (Page5)</h4>
-          <FileInput onImageSelected={(selectedImg) => onImageSelected(selectedImg, 'image5')} />
-
-          <h4 className="text-2xl font-semibold ">Image 2 (Page5)</h4>
-          <FileInput onImageSelected={(selectedImg) => onImageSelected(selectedImg, 'image6')} />
-
-          <h4 className="text-2xl font-semibold ">Image 3 (Page5)</h4>
-          <FileInput onImageSelected={(selectedImg) => onImageSelected(selectedImg, 'image7')} />
-
-          <h4 className="text-2xl font-semibold ">Image 4 (Page5)</h4>
-          <FileInput onImageSelected={(selectedImg) => onImageSelected(selectedImg, 'image8')} />
+                {currentPage === "crop-img" && selectedImageKey === key ? (
+                  <ImageCropper
+                    image={image}
+                    onCropDone={onCropDone}
+                    onCropCancel={onCropCancel}
+                  />
+                ) : (
+                  <div>
+                    <FileInput onImageSelected={(img) => onGeneralImageSelected(img, key)} />
+                    {imagesAfterCrop[key] && (
+                      <div className="mt-2">
+                        <img
+                          src={imagesAfterCrop[key]}
+                          alt={`Preview of ${key}`}
+                          className="w-48 h-auto rounded shadow"
+                        />
+                        <p>Preview of cropped {key}</p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setImage(imagesAfterCrop[key]);
+                            setSelectedImageKey(key);
+                            setCurrentPage("crop-img");
+                          }}
+                          className="bg-blue-400 hover:bg-blue-600 w-4/12 rounded-xl p-2 mt-2 mr-4"
+                        >
+                          Crop Again
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCurrentPage("choose-img");
+                            setImage("");
+                            setFormData((prev) => ({ ...prev, [key]: "" }));
+                            setImagesAfterCrop((prev) => {
+                              const updated = { ...prev };
+                              delete updated[key];
+                              return updated;
+                            });
+                          }}
+                          className="bg-blue-400 hover:bg-blue-600 w-4/12 rounded-xl p-2 mt-2"
+                        >
+                          Upload New Image
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })} 
         </span>
         <button type="submit" className="bg-blue-500 w-4/12 rounded-xl p-2 mt-2">
           Generate PDF
         </button>
       </form>
-      
+
     </div>
   );
 }

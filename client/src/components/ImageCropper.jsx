@@ -2,32 +2,49 @@ import React, { useState, useCallback } from 'react';
 import Cropper from 'react-easy-crop';
 import { Slider } from '@mui/material';
 
+const createImage = (url) =>
+  new Promise((resolve, reject) => {
+    const image = new Image();
+    image.setAttribute('crossOrigin', 'anonymous'); // ensure CORS support
+    image.addEventListener('load', () => resolve(image));
+    image.addEventListener('error', reject);
+    image.src = url;
+  });
+
 export default function ImageCropper({ image, onCropDone, onCropCancel }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [aspect, setAspect] = useState(4 / 3); 
+  const [rotation, setRotation] = useState(0);
+  const [aspect, setAspect] = useState(4 / 3);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   const handleCropComplete = useCallback((_, croppedPixels) => {
     setCroppedAreaPixels(croppedPixels);
   }, []);
 
-  const handleCrop = () => {
+  const handleCrop = async () => {
     if (!croppedAreaPixels) {
       alert("Crop area is not ready yet.");
       return;
     }
-    onCropDone(croppedAreaPixels);
+
+    try {
+      const croppedImage = await getCroppedImg(image, croppedAreaPixels, rotation);
+      onCropDone(croppedImage);
+    } catch (err) {
+      console.error("Error cropping image:", err);
+    }
   };
 
   return (
-    <div>
-      <div style={{ marginBottom: '1rem' }}>
-        <label htmlFor="aspect-select" style={{ marginRight: 10 }}>Aspect Ratio:</label>
+    <div className="w-full max-w-2xl mx-auto space-y-4">
+      <div>
+        <label htmlFor="aspect-select" className="mr-2 font-medium">Aspect Ratio:</label>
         <select
           id="aspect-select"
           value={aspect}
           onChange={(e) => setAspect(Number(e.target.value))}
+          className="border border-gray-300 rounded px-2 py-1"
         >
           <option value={4 / 3}>4:3</option>
           <option value={3 / 4}>3:4</option>
@@ -37,33 +54,88 @@ export default function ImageCropper({ image, onCropDone, onCropCancel }) {
         </select>
       </div>
 
-      <div style={{ position: 'relative', width: 300, height: 300 }}>
+      <div className="relative w-full h-[300px] sm:h-[400px] bg-gray-100">
         <Cropper
           image={image}
           crop={crop}
           zoom={zoom}
+          rotation={rotation}
           aspect={aspect}
           onCropChange={setCrop}
           onZoomChange={setZoom}
+          onRotationChange={setRotation}
           onCropComplete={handleCropComplete}
         />
       </div>
 
-      <div style={{ marginTop: '1rem' }}>
-        <label>Zoom:</label>
-        <Slider
-          min={1}
-          max={3}
-          step={0.1}
-          value={zoom}
-          onChange={(e, value) => setZoom(value)}
-        />
+      <div>
+        <label className="block font-medium mb-1">Zoom: {zoom.toFixed(1)}</label>
+        <Slider min={1} max={3} step={0.1} value={zoom} onChange={(e, value) => setZoom(value)} />
       </div>
 
-      <div style={{ marginTop: '1rem' }}>
-        <button type="button" onClick={handleCrop} className="bg-blue-400 hover:bg-blue-600 w-4/12 rounded-xl p-2 mt-2 mr-4">Crop & Save</button>
-        <button type="button" onClick={onCropCancel} className="bg-blue-400 hover:bg-blue-600 w-4/12 rounded-xl p-2 mt-2 mr-4">Cancel</button>
+      <div>
+        <label className="block font-medium mb-1">Rotate: {rotation}°</label>
+        <Slider min={0} max={360} step={1} value={rotation} onChange={(e, value) => setRotation(value)} />
+      </div>
+
+      <div className="flex gap-4 mt-4">
+        <button
+          type="button"
+          onClick={handleCrop}
+          className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+        >
+          Crop & Save
+        </button>
+        <button
+          type="button"
+          onClick={onCropCancel}
+          className="bg-gray-400 hover:bg-gray-600 text-white rounded-lg px-4 py-2"
+        >
+          Cancel
+        </button>
       </div>
     </div>
   );
+}
+
+async function getCroppedImg(imageSrc, pixelCrop, rotation = 0) {
+  const image = await createImage(imageSrc);
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+
+  const radians = (rotation * Math.PI) / 180;
+
+  const bBoxWidth =
+    Math.abs(image.width * Math.cos(radians)) +
+    Math.abs(image.height * Math.sin(radians));
+  const bBoxHeight =
+    Math.abs(image.width * Math.sin(radians)) +
+    Math.abs(image.height * Math.cos(radians));
+
+  const tempCanvas = document.createElement("canvas");
+  const tempCtx = tempCanvas.getContext("2d");
+
+  tempCanvas.width = bBoxWidth;
+  tempCanvas.height = bBoxHeight;
+
+  tempCtx.translate(bBoxWidth / 2, bBoxHeight / 2);
+  tempCtx.rotate(radians);
+  tempCtx.drawImage(image, -image.width / 2, -image.height / 2);
+
+  canvas.width = pixelCrop.width;
+  canvas.height = pixelCrop.height;
+
+  ctx.drawImage(
+    tempCanvas,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    pixelCrop.width,
+    pixelCrop.height
+  );
+
+  return canvas.toDataURL("image/jpeg");
 }
