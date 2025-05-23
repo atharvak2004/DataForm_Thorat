@@ -3,7 +3,7 @@ import { Page, View, Image, StyleSheet } from "@react-pdf/renderer";
 const styles = StyleSheet.create({
   page: {
     fontSize: 10,
-    padding: 33,
+    padding: 40,
     lineHeight: 1.2,
     backgroundColor: 'white',
     width: '210mm',
@@ -11,11 +11,11 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     position: "relative",
   },
+
   gridContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "flex-start",
-    gap: 10,
+    justifyContent: "space-between",
   },
   outerBorder: {
     border: '2pt solid black',
@@ -23,18 +23,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imageBox: {
+    width: "48%",
     aspectRatio: 4 / 3,
     marginBottom: 10,
-    marginTop: 10,
+    position: "relative",
+    marginTop: 40,
     backgroundColor: "#f0f0f0",
     justifyContent: "center",
     alignItems: "center",
   },
+
   image: {
     maxWidth: "100%",
     maxHeight: "100%",
     objectFit: "contain",
   },
+
   stampWrapper: {
     position: "absolute",
     top: "25%",
@@ -49,33 +53,29 @@ const styles = StyleSheet.create({
   },
 });
 
-const IndTractorPage5 = ({ data }) => {
-  const images = [data.image5, data.image6, data.image7, data.image8].filter(Boolean);
-  const numImages = images.length;
-
-  const getBoxWidth = () => {
-    if (numImages <= 2) return "60%";
-    if (numImages <= 4) return "50%";
-    return "100%";
-  };
-
-  return (
-    <Page size="A4" style={styles.page}>
-      <View style={styles.outerBorder}>
-        <View style={styles.gridContainer}>
-          {images.map((src, index) => (
-            <View key={index} style={[styles.imageBox, { width: getBoxWidth() }]}>
-              <Image style={styles.image} src={src} />
-            </View>
-          ))}
+const KotakBankPage5 = ({ data }) => (
+  <Page size="A4" style={styles.page}>
+    <View style={styles.outerBorder}>
+      <View style={styles.gridContainer}>
+        <View style={styles.imageBox}>
+          <Image style={styles.image} src={data.image5} />
         </View>
-
-        <View style={styles.stampWrapper}>
-          <Image style={styles.stamp} src="/assets/Stamp_img.png" />
+        <View style={styles.imageBox}>
+          <Image style={styles.image} src={data.image6} />
+        </View>
+        <View style={styles.imageBox}>
+          <Image style={styles.image} src={data.image7} />
+        </View>
+        <View style={styles.imageBox}>
+          <Image style={styles.image} src={data.image8} />
         </View>
       </View>
-    </Page>
-  );
-};
 
-export default IndTractorPage5;
+      <View style={styles.stampWrapper}>
+        <Image style={styles.stamp} src="/assets/Stamp_img.png" />
+      </View>
+    </View>
+  </Page>
+);
+
+export default KotakBankPage5;
