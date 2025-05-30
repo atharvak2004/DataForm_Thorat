@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ImageCropper from "../ImageCropper";
 import FileInput from "../FileInput";
+function convertFormDataToRows(formData) {
+  const headers = Object.keys(formData); // Now includes all keys
+  const values = headers.map(key => formData[key] || ""); // Explicitly map all headers
+  return { headers, rows: [values] };
+}
 
 export default function IndRegReportForm({ onSubmit }) {
   const [image, setImage] = useState('');
   const [currentPage, setCurrentPage] = useState('choose-img');
   const [selectedImageKey, setSelectedImageKey] = useState('');
-  const [imagesAfterCrop, setImagesAfterCrop] = useState({});
+
   const [formData, setFormData] = useState({
     referenceNo: "",
     reportDate: "",
@@ -82,15 +87,63 @@ export default function IndRegReportForm({ onSubmit }) {
     image6: "",
     image7: "",
     image8: "",
+    lastUpdated: "",
   });
+
+  const [editMode, setEditMode] = useState(false);
+  const [rowIndex, setRowIndex] = useState(null);
+  const [searchInput, setSearchInput] = useState("");
+
+  useEffect(() => {
+    console.log("📦 formData updated:", formData);
+  }, [formData]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    const { rows } = convertFormDataToRows(formData);
+    const values = rows[0];
+
+    try {
+      const url = editMode
+        ? `${import.meta.env.VITE_API_URL}/report3/update/${rowIndex}`
+        : `${import.meta.env.VITE_API_URL}/report3`;
+
+      const body = JSON.stringify({
+        values: [values],
+        rawFormData: formData,
+      });
+
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+      });
+
+      const result = await response.text();
+      alert(result);
+      onSubmit(formData);
+    } catch (err) {
+      console.error("Save error:", err);
+      alert("Failed to save data.");
+    }
+  };
+
+  const searchByvehicleNo = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/report3/find/${searchInput}`);
+      const { rowData, rowIndex } = await res.json();
+      setFormData(rowData);
+      setRowIndex(rowIndex);
+      setEditMode(true);
+    } catch (err) {
+      alert("Vehicle not found.");
+    }
   };
 
   const onGeneralImageSelected = (selectedImg, imageKey) => {
@@ -101,7 +154,7 @@ export default function IndRegReportForm({ onSubmit }) {
 
   const onChassisImageSelected = (selectedImg) => {
     setImage(selectedImg);
-    setSelectedImageKey('chassisImage');
+    setSelectedImageKey("chassisImage");
     setCurrentPage("crop-img");
   };
 
@@ -111,29 +164,34 @@ export default function IndRegReportForm({ onSubmit }) {
     setSelectedImageKey('');
   };
 
-  const onCropDone = (croppedImage) => {
-    if (selectedImageKey) {
-      setFormData(prev => ({
-        ...prev,
-        [selectedImageKey]: croppedImage
-      }));
+  const onCropDone = (cloudinaryUrl) => { // Rename parameter for clarity
+    console.log("✅ Cropped image returned:", selectedImageKey, cloudinaryUrl);
 
-      if (selectedImageKey !== 'chassisImage') {
-        setImagesAfterCrop(prev => ({
-          ...prev,
-          [selectedImageKey]: croppedImage
-        }));
-      }
+    if (selectedImageKey) {
+      setFormData((prev) => ({
+        ...prev,
+        [selectedImageKey]: cloudinaryUrl, // Use the parameter
+      }));
     }
-    setCurrentPage("choose-img");
+
     setImage('');
     setSelectedImageKey('');
+    setCurrentPage("choose-img");
   };
-  
   return (
     <div className=" p-10 text-xl ">
-      <h2 className="text-3xl mb-10">Equitas Bank LTD. REPORT</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col lg:w-5/12 space-y-3 text-left p-5 bg-slate-200">
+      <h1 className="text-4xl mb-14 font-semibold text-center">EQUITAS BANK REPORT</h1>
+      <div className="bg-gray-200 rounded-xl p-10 max-w-5xl w-full mx-auto border border-gray-300 mb-10">
+        <h2 className="text-2xl font-semibold mb-2">Search Vehicle Number to Update</h2>
+        <input type="text" placeholder="Enter Vehicle No (e.g., MH12AB0000)" value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          className="border border-gray-400 rounded p-2 w-1/2 mr-2" />
+        <button type="button" onClick={searchByvehicleNo} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          Search
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-6 bg-gray-50  rounded-xl p-10 max-w-5xl w-full mx-auto border border-gray-300">
         <label htmlFor="referenceNo">Reference No:</label>
         <input className='border border-red-600 rounded-lg p-2' id="referenceNo" name="referenceNo" placeholder="IND/2025/1" value={formData.referenceNo} onChange={handleChange} />
 
@@ -450,41 +508,38 @@ export default function IndRegReportForm({ onSubmit }) {
 
 
         <span className="flex flex-col space-y-3 text-left p-5 border border-black bg-white">
-          <h2 className="text-3xl font-bold mb-5 ">Section I: Chassis Number Impression/ Photo</h2>
+          <h2 className="text-3xl font-bold mb-5">Section H: Vehicle Images</h2>
 
-          <h4 className="text-2xl font-semibold ">Chassis Number Image</h4>
-          {currentPage === "crop-img" ? (
+          {currentPage === "crop-img" && selectedImageKey === "chassisImage" ? (
             <ImageCropper
               image={image}
               onCropDone={onCropDone}
               onCropCancel={onCropCancel}
+              vehicleNo={formData.vehicleNo}
+              imageKey="chassisImage"
             />
           ) : formData.chassisImage ? (
             <div>
-              <div>
-                <img
-                  src={formData.chassisImage}
-                  alt="Cropped Preview"
-                  className="cropped-img"
-                  style={{ maxWidth: "200px" }}
-                />
-                <p>Preview of cropped chassis image</p>
-              </div>
+              <img src={formData.chassisImage} alt="Chassis Preview" className="w-48 h-auto rounded shadow" />
+              <p>Preview of cropped chassis image</p>
               <button
                 type="button"
-                onClick={() => setCurrentPage("crop-img")}
-                className="bg-blue-400 hover:bg-blue-600 w-4/12 rounded-xl p-2 mt-2 mr-4"
+                onClick={() => {
+                  setImage(formData.chassisImage);
+                  setSelectedImageKey("chassisImage");
+                  setCurrentPage("crop-img");
+                }}
+                className="bg-blue-500 text-white p-2 rounded mt-2 mr-4"
               >
                 Crop Again
               </button>
               <button
                 type="button"
                 onClick={() => {
-                  setCurrentPage("choose-img");
-                  setImage("");
+                  setImage('');
                   setFormData((prev) => ({ ...prev, chassisImage: "" }));
                 }}
-                className="bg-blue-400 hover:bg-blue-600 w-4/12 rounded-xl p-2 mt-2"
+                className="bg-gray-400 text-white p-2 rounded mt-2"
               >
                 Upload New Image
               </button>
@@ -493,6 +548,7 @@ export default function IndRegReportForm({ onSubmit }) {
             <FileInput onImageSelected={onChassisImageSelected} />
           )}
         </span>
+
 
         <span className="flex flex-col space-y-3 text-left p-5 border border-black bg-white">
           <h2 className="text-3xl font-bold mb-5 ">Section J: Online Status of Vehicle</h2>
@@ -513,28 +569,32 @@ export default function IndRegReportForm({ onSubmit }) {
         </span>
 
         <span className="flex flex-col space-y-3 text-left p-5 border border-black bg-white">
-          <h2 className="text-3xl font-bold mb-5 ">Images Section:</h2>
+          <h2 className="text-3xl font-bold mb-5">Images Section:</h2>
+
           {[...Array(8)].map((_, i) => {
             const key = `image${i + 1}`;
             const page = i < 4 ? 'Page4' : 'Page5';
 
             return (
-              <div key={key}>
-                <h4 className="text-2xl font-semibold">Image {i % 4 + 1} ({page})</h4>
+              <div key={key} className="mb-6">
+                <h5 className="text-xl font-semibold">Image {i % 4 + 1} ({page})</h5>
 
                 {currentPage === "crop-img" && selectedImageKey === key ? (
                   <ImageCropper
                     image={image}
                     onCropDone={onCropDone}
                     onCropCancel={onCropCancel}
+                    vehicleNo={formData.vehicleNo}
+                    imageKey={key}
                   />
                 ) : (
                   <div>
                     <FileInput onImageSelected={(img) => onGeneralImageSelected(img, key)} />
-                    {imagesAfterCrop[key] && (
+
+                    {formData[key] && (
                       <div className="mt-2">
                         <img
-                          src={imagesAfterCrop[key]}
+                          src={formData[key]}
                           alt={`Preview of ${key}`}
                           className="w-48 h-auto rounded shadow"
                         />
@@ -542,27 +602,20 @@ export default function IndRegReportForm({ onSubmit }) {
                         <button
                           type="button"
                           onClick={() => {
-                            setImage(imagesAfterCrop[key]);
+                            setImage(formData[key]);
                             setSelectedImageKey(key);
                             setCurrentPage("crop-img");
                           }}
-                          className="bg-blue-400 hover:bg-blue-600 w-4/12 rounded-xl p-2 mt-2 mr-4"
+                          className="bg-blue-500 text-white p-2 rounded mt-2 mr-4"
                         >
                           Crop Again
                         </button>
                         <button
                           type="button"
                           onClick={() => {
-                            setCurrentPage("choose-img");
-                            setImage("");
                             setFormData((prev) => ({ ...prev, [key]: "" }));
-                            setImagesAfterCrop((prev) => {
-                              const updated = { ...prev };
-                              delete updated[key];
-                              return updated;
-                            });
                           }}
-                          className="bg-blue-400 hover:bg-blue-600 w-4/12 rounded-xl p-2 mt-2"
+                          className="bg-gray-400 text-white p-2 rounded mt-2"
                         >
                           Upload New Image
                         </button>
@@ -574,6 +627,7 @@ export default function IndRegReportForm({ onSubmit }) {
             );
           })}
         </span>
+
         <button type="submit" className="bg-blue-500 w-4/12 rounded-xl p-2 mt-2">
           Generate PDF
         </button>

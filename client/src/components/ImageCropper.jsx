@@ -5,13 +5,13 @@ import { Slider } from '@mui/material';
 const createImage = (url) =>
   new Promise((resolve, reject) => {
     const image = new Image();
-    image.setAttribute('crossOrigin', 'anonymous'); // ensure CORS support
+    image.setAttribute('crossOrigin', 'anonymous');
     image.addEventListener('load', () => resolve(image));
     image.addEventListener('error', reject);
     image.src = url;
   });
 
-export default function ImageCropper({ image, onCropDone, onCropCancel }) {
+export default function ImageCropper({ image, onCropDone, onCropCancel, vehicleNo, imageKey }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
@@ -22,6 +22,24 @@ export default function ImageCropper({ image, onCropDone, onCropCancel }) {
     setCroppedAreaPixels(croppedPixels);
   }, []);
 
+  const uploadToCloudinary = async (base64Image) => {
+  const data = new FormData();
+  data.append("file", base64Image);
+  data.append("upload_preset", "unsigned_upload");
+  const publicId = `report-images/${vehicleNo}-${imageKey}-${Date.now()}`;
+  data.append("public_id", publicId);
+
+  const response = await fetch("https://api.cloudinary.com/v1_1/duqherrw9/image/upload", {
+    method: "POST",
+    body: data,
+  });
+
+  const json = await response.json();
+  return `${json.secure_url}`;
+};
+
+
+
   const handleCrop = async () => {
     if (!croppedAreaPixels) {
       alert("Crop area is not ready yet.");
@@ -30,7 +48,8 @@ export default function ImageCropper({ image, onCropDone, onCropCancel }) {
 
     try {
       const croppedImage = await getCroppedImg(image, croppedAreaPixels, rotation);
-      onCropDone(croppedImage);
+      const cloudinaryUrl = await uploadToCloudinary(croppedImage);
+      onCropDone(cloudinaryUrl);
     } catch (err) {
       console.error("Error cropping image:", err);
     }
@@ -84,7 +103,7 @@ export default function ImageCropper({ image, onCropDone, onCropCancel }) {
           onClick={handleCrop}
           className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
         >
-          Crop & Save
+          Crop & Upload
         </button>
         <button
           type="button"
@@ -137,5 +156,5 @@ async function getCroppedImg(imageSrc, pixelCrop, rotation = 0) {
     pixelCrop.height
   );
 
-  return canvas.toDataURL("image/jpeg");
+  return canvas.toDataURL("image/jpeg", 0.6);
 }

@@ -53,12 +53,12 @@ const styles = StyleSheet.create({
         borderBottom: '1px solid #ddd',
     },
     tableCell: {
-        padding: 1.5,
+        padding: 1.2,
         borderRight: '1px solid #ddd',
     },
     gridRow: {
         flexDirection: 'row',
-        marginBottom: 3,
+        marginBottom: 2,
     },
     gridLabel: {
         width: '30%',
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     twoColGrid: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 3,
+        marginBottom: 2,
         marginRight: 5,
     },
     col: {
@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
         bottom: 30,
     },
     verticalBorder: {
-        borderRight: '1px solid #000',
         paddingRight: 25,
         paddingLeft: 10,
     },
@@ -119,11 +118,10 @@ export function IndRegPage1({ data }) {
                 </View>
 
                 {/* Valuation Report */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionHeader}>VALUATION REPORT</Text>
-                    <View style={styles.twoColGrid}>
-                        <Text>Reference No - {data.referenceNo}</Text>
-                        <Text>Report Date - {data.reportDate}</Text>
+                <View style={[styles.section, { marginTop: 8 }]}>
+                    <View style={styles.tableRow}>
+                        <Text style={[styles.tableCell, { flex: 2 }]}>Reference No - {data.referenceNo}</Text>
+                        <Text style={styles.tableCell}>Report Date - {data.reportDate}</Text>
                     </View>
                 </View>
 
@@ -132,9 +130,7 @@ export function IndRegPage1({ data }) {
                     <Text style={styles.sectionHeader}>Reference Details:</Text>
                     <View style={styles.twoColGrid}>
                         <View style={styles.verticalBorder}>
-                            <Text style={{ fontWeight: 'bold' }}>INDUSIND BANK LTD.</Text>
-                        </View>
-                        <View style={styles.salesPersonName}>
+                            <Text style={{ fontWeight: 'bold', fontSize: 12, marginBottom: 4 }}>INDUSIND BANK LTD.</Text>
                             <Text>NAME OF SALES PERSON: {data.salesPerson}</Text>
                         </View>
                     </View>

@@ -34,14 +34,13 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     maxHeight: "100%",
     objectFit: "contain",
+    zIndex: 10,
   },
   stampWrapper: {
     position: "absolute",
-    top: "25%",
-    left: "40%",
-    transform: "translate(-50%, -50%)",
     width: 200,
     height: 200,
+    zIndex: 10,
   },
   stamp: {
     width: "100%",
@@ -53,15 +52,58 @@ const IndTractorPage5 = ({ data }) => {
   const images = [data.image5, data.image6, data.image7, data.image8].filter(Boolean);
   const numImages = images.length;
 
+
   const getBoxWidth = () => {
-    if (numImages <= 2) return "60%";
-    if (numImages <= 4) return "50%";
-    return "100%";
+    if (numImages == 1) {
+      return "100%";
+    }
+    if (numImages == 2) {
+      return "85%";
+    }
+    if (numImages == 3 || numImages == 4) {
+      return "49%";
+    }
   };
+
+  const getStampPosition = () => {
+
+    if (numImages == 1) {
+      return {
+        position: "absolute",
+        top: "40%",
+        left: "40%",
+        transform: "translate(-50%, -50%)",
+        width: 200,
+        height: 200,
+      };
+    }
+    if (numImages == 2) {
+      return {
+        position: "absolute",
+        top: "35%",
+        left: "40%",
+        transform: "translate(-50%, -50%)",
+        width: 200,
+        height: 200,
+      };
+    }
+    else {
+      return {
+        position: "absolute",
+        top: "25%",
+        left: "40%",
+        transform: "translate(-50%, -50%)",
+        width: 200,
+        height: 200,
+      };
+    }
+  };
+
 
   return (
     <Page size="A4" style={styles.page}>
       <View style={styles.outerBorder}>
+
         <View style={styles.gridContainer}>
           {images.map((src, index) => (
             <View key={index} style={[styles.imageBox, { width: getBoxWidth() }]}>
@@ -70,9 +112,10 @@ const IndTractorPage5 = ({ data }) => {
           ))}
         </View>
 
-        <View style={styles.stampWrapper}>
+        <View style={[ getStampPosition()]}>
           <Image style={styles.stamp} src="/assets/Stamp_img.png" />
         </View>
+
       </View>
     </Page>
   );
