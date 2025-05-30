@@ -1,16 +1,21 @@
 const express = require('express');
-const cors = require('cors');
 const { google } = require('googleapis');
-require('dotenv').config(); // ⬅️ load .env first
+require('dotenv').config(); 
 const keys = require('./service-account.json');
-
 const app = express();
+const cors = require("cors");
 
-// ✅ CORS setup to allow all origins or configure specifically
-app.use(cors({
-  origin: process.env.CLIENT_URL || '*', // e.g., http://localhost:5173 for Vite
-  credentials: true,
-}));
+const allowedOrigin = process.env.CLIENT_URL || "https://valuecarexpert-66oxvj99n-atharvak2004s-projects.vercel.app";
+
+app.use(
+  cors({
+    origin: allowedOrigin,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 
 app.use(express.json());
 
