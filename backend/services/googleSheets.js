@@ -1,5 +1,7 @@
 const { google } = require("googleapis");
-const keys = require("../service-account.json");
+const fs = require("fs");
+
+const keys = JSON.parse(fs.readFileSync("/etc/secrets/service-account.json", "utf8"));
 
 const auth = new google.auth.JWT(
   keys.client_email,
