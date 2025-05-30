@@ -28,8 +28,10 @@ export default function Login() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(form),
       });
+
 
       if (!res.ok) {
         const err = await res.text();

@@ -5,16 +5,18 @@ const keys = require('./service-account.json');
 const app = express();
 const cors = require("cors");
 
-const allowedOrigin = process.env.CLIENT_URL || "https://valuecarexpert-66oxvj99n-atharvak2004s-projects.vercel.app";
+const allowedOrigin = process.env.CLIENT_URL || "https://valuecarexpert-4ddw8lx8s-atharvak2004s-projects.vercel.app";
 
-app.use(
-  cors({
-    origin: allowedOrigin,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+const corsOptions = {
+  origin: allowedOrigin,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // 👈 Handle preflight
+
 
 
 app.use(express.json());
