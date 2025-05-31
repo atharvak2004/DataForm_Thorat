@@ -43,11 +43,14 @@
 
 // const PORT = process.env.PORT || 3000;
 // app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 const express = require('express');
 const fs = require('fs');
 require('dotenv').config();
+const { google } = require('googleapis');
 
 const app = express();
+const keys = JSON.parse(fs.readFileSync("/etc/secrets/service-account.json", "utf8"));
 
 // Middleware
 app.use(express.json());
