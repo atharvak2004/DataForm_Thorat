@@ -13,11 +13,15 @@ async function getUsers() {
   });
 
   const rows = res.data.values;
+  if (!rows || rows.length === 0) {
+    return { users: [], headers: [] };
+  }
+
   const headers = rows[0];
   const users = rows.slice(1).map(row => {
     const user = {};
     headers.forEach((h, i) => {
-      user[h] = row[i];
+      user[h] = row[i] || "";
     });
     return user;
   });
@@ -38,10 +42,12 @@ exports.signup = async (req, res) => {
   const requiredHeaders = ["email", "password", "role"];
   const syncedHeaders = [...headers];
 
+  // Add missing required headers
   for (const h of requiredHeaders) {
     if (!syncedHeaders.includes(h)) syncedHeaders.push(h);
   }
 
+  // Update headers if needed
   if (JSON.stringify(headers) !== JSON.stringify(syncedHeaders)) {
     await sheets.spreadsheets.values.update({
       spreadsheetId: SPREADSHEET_ID,
@@ -51,6 +57,7 @@ exports.signup = async (req, res) => {
     });
   }
 
+  // Create new row with all headers
   const newRow = syncedHeaders.map(h => {
     if (h === "email") return email;
     if (h === "password") return hashedPassword;
@@ -58,6 +65,7 @@ exports.signup = async (req, res) => {
     return "";
   });
 
+  // Append new user
   await sheets.spreadsheets.values.append({
     spreadsheetId: SPREADSHEET_ID,
     range: SHEET_NAME,
@@ -82,26 +90,62 @@ exports.login = async (req, res) => {
     expiresIn: "1d",
   });
 
-  res.json({ token });
+  // Set HTTP-only cookie
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  });
+
+  // Return success response
+  res.json({ 
+    success: true, 
+    role: user.role,
+    message: "Login successful"
+  });
 };
+
+exports.logout = (req, res) => {
+  // Clear token cookie
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+  });
+  
+  res.json({ success: true, message: "Logged out successfully" });
+};
+
 exports.changePassword = async (req, res) => {
   const { email, currentPassword, newPassword } = req.body;
   const { users, headers } = await getUsers();
+  
+  // Validate user exists
   const user = users.find(u => u.email === email);
-
   if (!user) return res.status(404).send("User not found.");
 
+  // Verify current password
   const passwordMatch = await bcrypt.compare(currentPassword, user.password);
   if (!passwordMatch) return res.status(401).send("Current password is incorrect.");
 
+  // Hash new password
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-  const rowIndex = users.findIndex(u => u.email === email) + 2; 
+  // Find user row (add 2: 1 for header row, 1 for 1-based indexing)
+  const rowIndex = users.findIndex(u => u.email === email) + 2;
+  
+  // Find password column index
   const passwordColIndex = headers.indexOf("password");
-
   if (passwordColIndex === -1) return res.status(500).send("Password column not found.");
 
-  const range = `${SHEET_NAME}!${String.fromCharCode(65 + passwordColIndex)}${rowIndex}`;
+  // Convert index to column letter (A=0, B=1, etc.)
+  const columnLetter = String.fromCharCode(65 + passwordColIndex);
+  
+  // Create range (e.g., "Users!B5")
+  const range = `${SHEET_NAME}!${columnLetter}${rowIndex}`;
+  
+  // Update password in sheet
   await sheets.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
     range,

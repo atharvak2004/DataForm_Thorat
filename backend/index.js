@@ -5,51 +5,62 @@ const cors = require('cors');
 
 const app = express();
 
-// Configure allowed origins
+// Updated allowed origins with Vercel pattern
 const allowedOrigins = [
-  "https://valuecarexpert.vercel.app",
-  "http://localhost:3000"
+    "https://valuecarexpert.vercel.app",
+    "http://localhost:3000",
+    /\.vercel\.app$/ // Regex to match any Vercel subdomain
 ];
 
+// Update your CORS options
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (allowedOrigins.includes(origin) || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+
+        const allowedDomains = [
+            "https://valuecarexpert.vercel.app",
+            "http://localhost:3000",
+            /\.vercel\.app$/
+        ];
+
+        if (allowedDomains.some(domain => {
+            if (typeof domain === 'string') return origin === domain;
+            if (domain instanceof RegExp) return domain.test(origin);
+            return false;
+        })) {
+            callback(null, origin); // Return the specific origin
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true, // Allow credentials
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// ✅ Fixed: Load Google service account credentials safely
 let keys;
 try {
-  keys = JSON.parse(fs.readFileSync(process.env.GOOGLE_CREDENTIALS_PATH || "./service-account.json", "utf8"));
-  console.log("Google credentials loaded successfully");
+    keys = JSON.parse(fs.readFileSync(process.env.GOOGLE_CREDENTIALS_PATH || "./service-account.json", "utf8"));
+    console.log("Google credentials loaded successfully");
 } catch (err) {
-  console.error("Failed to load Google credentials:", err);
-  // Fallback to environment variable if available
-  if (process.env.GOOGLE_CREDENTIALS_JSON) {
-    try {
-      keys = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
-      console.log("Google credentials loaded from environment variable");
-    } catch (parseErr) {
-      console.error("Failed to parse Google credentials from environment:", parseErr);
-      process.exit(1);
+    console.error("Failed to load Google credentials:", err);
+    if (process.env.GOOGLE_CREDENTIALS_JSON) {
+        try {
+            keys = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
+            console.log("Google credentials loaded from environment variable");
+        } catch (parseErr) {
+            console.error("Failed to parse Google credentials from environment:", parseErr);
+            process.exit(1);
+        }
+    } else {
+        console.error("No Google credentials available");
+        process.exit(1);
     }
-  } else {
-    console.error("No Google credentials available");
-    process.exit(1);
-  }
 }
 
-// Import all routes
 const report1Routes = require("./routes/report1Routes");
 const report2Routes = require("./routes/report2Routes");
 const report3Routes = require("./routes/report3Routes");
@@ -58,7 +69,6 @@ const report5Routes = require("./routes/report5Routes");
 const historyRoutes = require("./routes/historyRoutes");
 const authRoutes = require("./routes/authRoutes");
 
-// Mount routes
 app.use("/report1", report1Routes);
 app.use("/report2", report2Routes);
 app.use("/report3", report3Routes);
@@ -69,10 +79,10 @@ app.use("/auth", authRoutes);
 
 // Test route
 app.get("/", (req, res) => {
-  res.send("Server is running!");
+    res.send("Server is running!");
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
