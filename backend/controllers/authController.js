@@ -3,10 +3,18 @@ const jwt = require("jsonwebtoken");
 const sheets = require("../services/googleSheets");
 const { SPREADSHEET_ID } = require("../config/constants");
 const SECRET = process.env.JWT_SECRET;
-
+const NodeCache = require("node-cache");
+const userCache = new NodeCache({ stdTTL: 60 });
 const SHEET_NAME = "Users";
 
-async function getUsers() {
+async function getUsers(forceRefresh = false) {
+  // Check cache first
+  const cacheKey = "users";
+  if (!forceRefresh && userCache.has(cacheKey)) {
+    return userCache.get(cacheKey);
+  }
+
+  // Fetch from Google Sheets if not cached
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: SPREADSHEET_ID,
     range: `${SHEET_NAME}`,
@@ -26,7 +34,10 @@ async function getUsers() {
     return user;
   });
 
-  return { users, headers };
+  const result = { users, headers };
+
+  userCache.set(cacheKey, result);
+  return result;
 }
 
 exports.signup = async (req, res) => {
@@ -99,8 +110,8 @@ exports.login = async (req, res) => {
   });
 
   // Return success response
-  res.json({ 
-    success: true, 
+  res.json({
+    success: true,
     role: user.role,
     message: "Login successful"
   });
@@ -113,14 +124,14 @@ exports.logout = (req, res) => {
     secure: process.env.NODE_ENV === "production",
     sameSite: "none",
   });
-  
+
   res.json({ success: true, message: "Logged out successfully" });
 };
 
 exports.changePassword = async (req, res) => {
   const { email, currentPassword, newPassword } = req.body;
   const { users, headers } = await getUsers();
-  
+
   // Validate user exists
   const user = users.find(u => u.email === email);
   if (!user) return res.status(404).send("User not found.");
@@ -134,17 +145,17 @@ exports.changePassword = async (req, res) => {
 
   // Find user row (add 2: 1 for header row, 1 for 1-based indexing)
   const rowIndex = users.findIndex(u => u.email === email) + 2;
-  
+
   // Find password column index
   const passwordColIndex = headers.indexOf("password");
   if (passwordColIndex === -1) return res.status(500).send("Password column not found.");
 
   // Convert index to column letter (A=0, B=1, etc.)
   const columnLetter = String.fromCharCode(65 + passwordColIndex);
-  
+
   // Create range (e.g., "Users!B5")
   const range = `${SHEET_NAME}!${columnLetter}${rowIndex}`;
-  
+
   // Update password in sheet
   await sheets.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
@@ -155,12 +166,21 @@ exports.changePassword = async (req, res) => {
 
   res.send("Password updated successfully.");
 };
+
 exports.getCurrentUser = async (req, res) => {
   try {
-    // Get token from cookies
-    const token = req.cookies.token;
+    // Safely handle potential undefined req object
+    if (!req) {
+      console.error("getCurrentUser: req object is undefined");
+      return res.status(500).json({ 
+        user: null, 
+        message: "Internal server error" 
+      });
+    }
+
+    // Safely access cookies with optional chaining
+    const token = req.cookies?.token;
     
-    // If no token, return unauthenticated
     if (!token) {
       return res.status(401).json({ user: null });
     }
@@ -168,12 +188,16 @@ exports.getCurrentUser = async (req, res) => {
     // Verify token
     const decoded = jwt.verify(token, SECRET);
     
-    // Get current user data from sheet
-    const { users } = await getUsers();
+    // Get users with cache refresh to ensure fresh data
+    const { users } = await getUsers(true); // Force refresh cache
+    
     const user = users.find(u => u.email === decoded.email);
     
     if (!user) {
-      return res.status(404).json({ user: null, message: "User not found" });
+      return res.status(404).json({ 
+        user: null, 
+        message: "User not found" 
+      });
     }
 
     // Return sanitized user data (without password)
@@ -181,11 +205,35 @@ exports.getCurrentUser = async (req, res) => {
     res.json({ user: userData });
     
   } catch (err) {
-    console.error("Error getting current user:", err);
+    // Handle specific JWT errors
     if (err.name === "TokenExpiredError") {
-      res.clearCookie("token");
-      return res.status(401).json({ user: null, message: "Session expired" });
+      res.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "none",
+      });
+      return res.status(401).json({ 
+        user: null, 
+        message: "Session expired" 
+      });
     }
-    res.status(500).json({ user: null, message: "Server error" });
+    
+    if (err.name === "JsonWebTokenError") {
+      res.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "none",
+      });
+      return res.status(401).json({ 
+        user: null, 
+        message: "Invalid token" 
+      });
+    }
+    
+    console.error("Error getting current user:", err);
+    res.status(500).json({ 
+      user: null, 
+      message: "Server error" 
+    });
   }
 };

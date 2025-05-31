@@ -2,8 +2,11 @@ const express = require('express');
 const fs = require('fs');
 require('dotenv').config();
 const cors = require('cors');
+const cookieParser = require("cookie-parser");
+
 
 const app = express();
+
 
 // Updated allowed origins with Vercel pattern
 const allowedOrigins = [
@@ -40,6 +43,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
 
 let keys;
 try {
