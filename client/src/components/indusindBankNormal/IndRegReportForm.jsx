@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import ImageCropper from "../ImageCropper";
 import FileInput from "../FileInput";
-const { vehicleNo } = useParams();
 
 function convertFormDataToRows(formData) {
   const headers = Object.keys(formData);
@@ -11,6 +10,7 @@ function convertFormDataToRows(formData) {
 }
 
 export default function IndRegReportForm({ onSubmit }) {
+  const { vehicleNo } = useParams();
   const [image, setImage] = useState('');
   const [currentPage, setCurrentPage] = useState('choose-img');
   const [selectedImageKey, setSelectedImageKey] = useState('');
