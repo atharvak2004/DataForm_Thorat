@@ -49,8 +49,9 @@ export default function Profile() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/change-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // Send cookie
+        credentials: "include",
         body: JSON.stringify({
+          email: user.email, // ✅ Fix added
           currentPassword: form.currentPassword,
           newPassword: form.newPassword,
         }),
@@ -64,6 +65,7 @@ export default function Profile() {
       setMessage("Failed to update password.");
     }
   };
+
 
   const toggleChangePassword = () => {
     setShowChangePassword((prev) => {
