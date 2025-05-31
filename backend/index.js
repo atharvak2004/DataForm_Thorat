@@ -48,13 +48,20 @@ const express = require('express');
 const fs = require('fs');
 require('dotenv').config();
 const { google } = require('googleapis');
+const cors = require('cors');
 
 const app = express();
-const keys = JSON.parse(fs.readFileSync("/etc/secrets/service-account.json", "utf8"));
 
-// Middleware
+// ✅ Allow all origins, headers, and methods using CORS
+app.use(cors()); // <-- Allow everything
+app.options('*', cors()); // <-- Pre-flight support for all routes
+
 app.use(express.json());
 
+// Google service account
+const keys = JSON.parse(fs.readFileSync("/etc/secrets/service-account.json", "utf8"));
+
+// Routes
 const authRoutes = require("./routes/authRoutes");
 app.use("/auth", authRoutes);
 
@@ -64,7 +71,6 @@ app.use('/test', testRoutes);
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
