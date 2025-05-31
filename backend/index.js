@@ -1,6 +1,8 @@
 const express = require('express');
 const { google } = require('googleapis');
 require('dotenv').config(); 
+const fs = require('fs');
+
 const keys = JSON.parse(fs.readFileSync("/etc/secrets/service-account.json", "utf8"));
 const app = express();
 const cors = require("cors");
