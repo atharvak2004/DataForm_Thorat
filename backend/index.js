@@ -52,28 +52,34 @@ const cors = require('cors');
 
 const app = express();
 
-// ✅ Allow all origins, headers, and methods using CORS
-app.use(cors()); // <-- Allow everything
-app.options('*', cors()); // <-- Pre-flight support for all routes
+const allowedOrigin = "https://valuecarexpert.vercel.app"; // ✅ Exact frontend origin
+
+const corsOptions = {
+  origin: allowedOrigin,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Handle preflight
 
 app.use(express.json());
 
-// Google service account
 const keys = JSON.parse(fs.readFileSync("/etc/secrets/service-account.json", "utf8"));
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
 app.use("/auth", authRoutes);
 
-const testRoutes = require('./routes/testRoutes');
-app.use('/test', testRoutes);
+const testRoutes = require("./routes/testRoutes");
+app.use("/test", testRoutes);
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.get("/", (req, res) => {
+  res.send("Hello World!");
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
