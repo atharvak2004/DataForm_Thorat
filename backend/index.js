@@ -1,7 +1,7 @@
 const express = require('express');
 const { google } = require('googleapis');
 require('dotenv').config(); 
-const keys = require('./service-account.json');
+const keys = JSON.parse(fs.readFileSync("/etc/secrets/service-account.json", "utf8"));
 const app = express();
 const cors = require("cors");
 
@@ -15,7 +15,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // 👈 Handle preflight
+app.options("*", cors(corsOptions)); 
 
 
 
