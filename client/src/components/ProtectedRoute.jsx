@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -17,19 +17,18 @@ const ProtectedRoute = ({ children }) => {
       } catch (error) {
         console.error("Authentication check failed:", error);
         setIsAuthenticated(false);
-      } finally {
-        setLoading(false);
       }
     };
+    if (isAuthenticated === null) {
+      checkAuth();
+    }
+  }, [location, isAuthenticated]);
 
-    checkAuth();
-  }, []);
-
-  if (loading) {
+  if (isAuthenticated === null) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
   }
 
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  return isAuthenticated ? children : <Navigate to="/login" replace state={{ from: location }} />;
 };
 
 export default ProtectedRoute;

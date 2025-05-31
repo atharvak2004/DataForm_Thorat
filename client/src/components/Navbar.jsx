@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -9,27 +8,27 @@ export default function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-          method: "GET",
-          credentials: "include", // Include cookies
-        });
+    // Only fetch user if not already loaded
+    if (user === null) {
+      const fetchUser = async () => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+            method: "GET",
+            credentials: "include",
+          });
 
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
-        } else {
-          setUser(null);
+          if (response.ok) {
+            const data = await response.json();
+            setUser(data.user);
+          }
+        } catch (err) {
+          console.error("Error fetching user:", err);
         }
-      } catch (err) {
-        console.error("Error fetching user:", err);
-        setUser(null);
-      }
-    };
+      };
 
-    fetchUser();
-  }, [location]);
+      fetchUser();
+    }
+  }, [location, user]);
 
   const handleLogout = async () => {
     try {

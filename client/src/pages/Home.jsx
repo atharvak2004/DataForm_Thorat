@@ -1,31 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
 function Home() {
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-          method: "GET",
-          credentials: "include", // Include cookies
-        });
+    // Only fetch user if not already loaded
+    if (user === null) {
+      const fetchUser = async () => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+            method: "GET",
+            credentials: "include",
+          });
 
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
+          if (response.ok) {
+            const data = await response.json();
+            setUser(data.user);
+          }
+        } catch (err) {
+          console.error("Error fetching user:", err);
+        } finally {
+          setLoading(false);
         }
-      } catch (err) {
-        console.error("Error fetching user:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+      };
 
-    fetchUser();
-  }, []);
+      fetchUser();
+    } else {
+      setLoading(false);
+    }
+  }, [user]);
 
   if (loading) {
     return (
