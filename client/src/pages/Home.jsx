@@ -1,36 +1,53 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 function Home() {
-
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 2;
+  const RETRY_DELAY = 1000;
+  const isMounted = useRef(true);
 
   useEffect(() => {
-    // Only fetch user if not already loaded
-    if (user === null) {
-      const fetchUser = async () => {
-        try {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-            method: "GET",
-            credentials: "include",
-          });
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
+  useEffect(() => {
+    if (user !== null) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (isMounted.current) {
           if (response.ok) {
             const data = await response.json();
             setUser(data.user);
           }
-        } catch (err) {
-          console.error("Error fetching user:", err);
-        } finally {
           setLoading(false);
         }
-      };
+      } catch (err) {
+        console.error("Error fetching user:", err);
+        if (retryCount < MAX_RETRIES && isMounted.current) {
+          setTimeout(() => {
+            setRetryCount(c => c + 1);
+          }, RETRY_DELAY);
+        } else {
+          setLoading(false);
+        }
+      }
+    };
 
-      fetchUser();
-    } else {
-      setLoading(false);
-    }
-  }, [user]);
+    fetchUser();
+  }, [user, retryCount]);
 
   if (loading) {
     return (
