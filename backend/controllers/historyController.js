@@ -11,15 +11,14 @@ exports.getLatestReports = async (req, res) => {
         spreadsheetId: SPREADSHEET_ID,
         range: `${sheet}`,
       });
+
       const rows = result.data.values;
-      if (!rows || rows.length < 2) {
-        continue;
-      }
+      if (!rows || rows.length < 2) continue;
+
       const headers = rows[0];
       const lastUpdatedIndex = headers.indexOf("lastUpdated");
-      if (lastUpdatedIndex === -1) {
-        continue;
-      }
+      if (lastUpdatedIndex === -1) continue;
+
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
         const report = {};
@@ -35,11 +34,14 @@ exports.getLatestReports = async (req, res) => {
         }
       }
     }
+
     const sortedReports = allReports
       .sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated))
       .slice(0, 25);
+
     res.json(sortedReports);
   } catch (err) {
+    console.error("History fetch error:", err);
     res.status(500).send("Failed to load report history");
   }
 };
