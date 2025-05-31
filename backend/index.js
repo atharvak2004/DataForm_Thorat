@@ -72,8 +72,8 @@ const keys = JSON.parse(fs.readFileSync("/etc/secrets/service-account.json", "ut
 // const authRoutes = require("./routes/authRoutes");
 // app.use("/auth", authRoutes);
 
-const testRoutes = require("./routes/testRoutes");
-app.use("/test", testRoutes);
+// const testRoutes = require("./routes/testRoutes");
+// app.use("/test", testRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
