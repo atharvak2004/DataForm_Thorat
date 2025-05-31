@@ -8,15 +8,12 @@ const app = express();
 // Configure allowed origins
 const allowedOrigins = [
   "https://valuecarexpert.vercel.app",
-  "http://localhost:3000" // For local development
+  "http://localhost:3000"
 ];
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin) || !origin) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -28,12 +25,29 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight for all routes
-
 app.use(express.json());
 
-// Load Google service account credentials
-const keys = JSON.parse(fs.readFileSync("/etc/secrets/service-account.json", "utf8"));
+// ✅ Fixed: Load Google service account credentials safely
+let keys;
+try {
+  keys = JSON.parse(fs.readFileSync(process.env.GOOGLE_CREDENTIALS_PATH || "./service-account.json", "utf8"));
+  console.log("Google credentials loaded successfully");
+} catch (err) {
+  console.error("Failed to load Google credentials:", err);
+  // Fallback to environment variable if available
+  if (process.env.GOOGLE_CREDENTIALS_JSON) {
+    try {
+      keys = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
+      console.log("Google credentials loaded from environment variable");
+    } catch (parseErr) {
+      console.error("Failed to parse Google credentials from environment:", parseErr);
+      process.exit(1);
+    }
+  } else {
+    console.error("No Google credentials available");
+    process.exit(1);
+  }
+}
 
 // Import all routes
 const report1Routes = require("./routes/report1Routes");
