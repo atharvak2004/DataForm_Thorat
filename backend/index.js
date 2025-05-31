@@ -55,13 +55,16 @@ const keys = JSON.parse(fs.readFileSync("/etc/secrets/service-account.json", "ut
 // Middleware
 app.use(express.json());
 
-// Sample Route
+const authRoutes = require("./routes/authRoutes");
+app.use("/auth", authRoutes);
+
 const testRoutes = require('./routes/testRoutes');
 app.use('/test', testRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
