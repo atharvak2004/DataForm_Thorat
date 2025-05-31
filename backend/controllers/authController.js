@@ -155,3 +155,37 @@ exports.changePassword = async (req, res) => {
 
   res.send("Password updated successfully.");
 };
+exports.getCurrentUser = async (req, res) => {
+  try {
+    // Get token from cookies
+    const token = req.cookies.token;
+    
+    // If no token, return unauthenticated
+    if (!token) {
+      return res.status(401).json({ user: null });
+    }
+
+    // Verify token
+    const decoded = jwt.verify(token, SECRET);
+    
+    // Get current user data from sheet
+    const { users } = await getUsers();
+    const user = users.find(u => u.email === decoded.email);
+    
+    if (!user) {
+      return res.status(404).json({ user: null, message: "User not found" });
+    }
+
+    // Return sanitized user data (without password)
+    const { password, ...userData } = user;
+    res.json({ user: userData });
+    
+  } catch (err) {
+    console.error("Error getting current user:", err);
+    if (err.name === "TokenExpiredError") {
+      res.clearCookie("token");
+      return res.status(401).json({ user: null, message: "Session expired" });
+    }
+    res.status(500).json({ user: null, message: "Server error" });
+  }
+};

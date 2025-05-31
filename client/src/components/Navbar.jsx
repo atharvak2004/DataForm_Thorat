@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { getToken, removeToken } from "../utils/auth";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -10,31 +9,45 @@ export default function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    const token = getToken();
-    if (token) {
+    const fetchUser = async () => {
       try {
-        const decoded = jwtDecode(token);
-        setUser(decoded);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+          method: "GET",
+          credentials: "include", // Include cookies
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
       } catch (err) {
-        console.error("Invalid token", err);
+        console.error("Error fetching user:", err);
         setUser(null);
       }
-    } else {
-      setUser(null);
-    }
+    };
+
+    fetchUser();
   }, [location]);
 
-  const handleLogout = () => {
-    removeToken();
-    setUser(null);
-    setMobileMenuOpen(false);
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include", 
+      });
+      setUser(null);
+      setMobileMenuOpen(false);
+      navigate("/login");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
 
   return (
     <nav className="bg-blue-800 text-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-
         <Link to="/" className="text-xl font-bold text-white lg:ml-18">
           JOSHI SURVEYOR
         </Link>
@@ -90,7 +103,6 @@ export default function Navbar() {
             {user && (
               <Link to="/profile" className="hover:text-blue-300" onClick={() => setMobileMenuOpen(false)}>Profile</Link>
             )}
-
             {!user && (
               <Link to="/login" className="hover:text-blue-300" onClick={() => setMobileMenuOpen(false)}>Login</Link>
             )}

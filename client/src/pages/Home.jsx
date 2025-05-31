@@ -1,32 +1,49 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
-import { getToken } from "../utils/auth";
 
 function Home() {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = getToken();
-    if (token) {
+    const fetchUser = async () => {
       try {
-        const decoded = jwtDecode(token);
-        setUser(decoded);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+          method: "GET",
+          credentials: "include", // Include cookies
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        }
       } catch (err) {
-        console.error("Invalid token");
+        console.error("Error fetching user:", err);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
+
+    fetchUser();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-blue-50">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div>
       {user && (
-        <div className=" bg-blue-50 text-left p-4 text-sm text-gray-700">
+        <div className="bg-blue-50 text-left p-4 text-sm text-gray-700">
           Hello, {user.email}
         </div>
       )}
 
-      <div className="flex flex-col items-center  min-h-screen bg-blue-50 p-5 pt-48">
+      <div className="flex flex-col items-center min-h-screen bg-blue-50 p-5 pt-48">
         <h1 className="text-4xl font-bold mb-4">Vehicle Valuation</h1>
         <p className="text-xl mb-10">Choose a template:</p>
 

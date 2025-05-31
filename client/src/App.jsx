@@ -16,8 +16,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminCreateUser from "./pages/AdminCreateUser";
 import ChangePassword from "./pages/ChangePassword";
 
-
-
 function App() {
   return (
     <div className="flex flex-col min-h-screen">
@@ -26,40 +24,19 @@ function App() {
       <main className="flex-grow">
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/" element={
-            <ProtectedRoute><Home /></ProtectedRoute>
-          } />
-          <Route path="/about" element={
-            <ProtectedRoute><About /></ProtectedRoute>
-          } />
-          <Route path="/indusindbank" element={
-            <ProtectedRoute><IndusindReportPage /></ProtectedRoute>
-          } />
-          <Route path="/indusindtractor" element={
-            <ProtectedRoute><IndusindTractorPage /></ProtectedRoute>
-          } />
-          <Route path="/equitasbank" element={
-            <ProtectedRoute><EquitasBankReportPage /></ProtectedRoute>
-          } />
-          <Route path="/kotakbank" element={
-            <ProtectedRoute><KotakBankReportPage /></ProtectedRoute>
-          } />
-          <Route path="/otherbank" element={
-            <ProtectedRoute><OtherBankReportPage /></ProtectedRoute>
-          } />
-          <Route path="/history" element={
-            <ProtectedRoute><History /></ProtectedRoute>
-          } />
-          <Route
-            path="/admin/create-user"
-            element={
-              <ProtectedRoute>
-                <AdminCreateUser />
-              </ProtectedRoute>
-            }
-          />
+          
+          {/* Protected routes */}
+          <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
+          <Route path="/indusindbank" element={<ProtectedRoute><IndusindReportPage /></ProtectedRoute>} />
+          <Route path="/indusindtractor" element={<ProtectedRoute><IndusindTractorPage /></ProtectedRoute>} />
+          <Route path="/equitasbank" element={<ProtectedRoute><EquitasBankReportPage /></ProtectedRoute>} />
+          <Route path="/kotakbank" element={<ProtectedRoute><KotakBankReportPage /></ProtectedRoute>} />
+          <Route path="/otherbank" element={<ProtectedRoute><OtherBankReportPage /></ProtectedRoute>} />
+          <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+          <Route path="/admin/create-user" element={<ProtectedRoute><AdminCreateUser /></ProtectedRoute>} />
         </Routes>
       </main>
 
