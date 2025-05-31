@@ -55,9 +55,9 @@ const app = express();
 const allowedOrigin = "https://valuecarexpert.vercel.app"; // ✅ Exact frontend origin
 
 const corsOptions = {
-  origin: allowedOrigin,
+  origin: "*",
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "DELETE", ],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
@@ -69,8 +69,8 @@ app.use(express.json());
 const keys = JSON.parse(fs.readFileSync("/etc/secrets/service-account.json", "utf8"));
 
 // Routes
-// const authRoutes = require("./routes/authRoutes");
-// app.use("/auth", authRoutes);
+const authRoutes = require("./routes/authRoutes");
+app.use("/auth", authRoutes);
 
 // const testRoutes = require("./routes/testRoutes");
 // app.use("/test", testRoutes);
