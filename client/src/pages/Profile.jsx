@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { getToken } from "../utils/auth";
-import { jwtDecode } from "jwt-decode";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -13,15 +11,26 @@ export default function Profile() {
   const [showChangePassword, setShowChangePassword] = useState(false);
 
   useEffect(() => {
-    const token = getToken();
-    if (token) {
+    const fetchUser = async () => {
       try {
-        const decoded = jwtDecode(token);
-        setUser(decoded);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+          method: "GET",
+          credentials: "include", // Required for sending cookies
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+        } else {
+          setUser(null); // triggers fallback UI
+        }
       } catch (err) {
-        console.error("Invalid token");
+        console.error("Failed to fetch user", err);
+        setUser(null);
       }
-    }
+    };
+
+    fetchUser();
   }, []);
 
   const handleChange = (e) => {
@@ -40,8 +49,8 @@ export default function Profile() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/change-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // Send cookie
         body: JSON.stringify({
-          email: user.email,
           currentPassword: form.currentPassword,
           newPassword: form.newPassword,
         }),
@@ -58,7 +67,7 @@ export default function Profile() {
 
   const toggleChangePassword = () => {
     setShowChangePassword((prev) => {
-      if (prev) setMessage("");  // clear message on cancel
+      if (prev) setMessage(""); // clear message on cancel
       return !prev;
     });
   };

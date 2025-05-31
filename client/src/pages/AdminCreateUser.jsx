@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { getToken } from "../utils/auth";
-import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminCreateUser() {
@@ -10,23 +8,31 @@ export default function AdminCreateUser() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const token = getToken();
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+          method: "GET",
+          credentials: "include", // Send cookie
+        });
 
-    try {
-      const decoded = jwtDecode(token);
-      if (decoded.role !== "admin") {
+        if (!res.ok) {
+          navigate("/login");
+          return;
+        }
+
+        const data = await res.json();
+        if (data.user.role !== "admin") {
+          navigate("/login");
+        } else {
+          setUser(data.user);
+        }
+      } catch (err) {
+        console.error("Error fetching user", err);
         navigate("/login");
-      } else {
-        setUser(decoded);
       }
-    } catch (err) {
-      console.error("Invalid token", err);
-      navigate("/login");
-    }
+    };
+
+    fetchUser();
   }, [navigate]);
 
   const handleChange = (e) => {
@@ -42,6 +48,7 @@ export default function AdminCreateUser() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // include cookies
         body: JSON.stringify(form),
       });
 
@@ -52,6 +59,8 @@ export default function AdminCreateUser() {
       setMessage("Failed to create user.");
     }
   };
+
+  if (!user) return <p className="p-6">Loading...</p>;
 
   return (
     <div className="max-w-md mx-auto p-6 mt-10 border shadow rounded">
