@@ -22,10 +22,10 @@ function Home() {
 
     const fetchUser = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-          method: "GET",
-          credentials: "include",
-        });
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+      method: "GET",
+      credentials: "include", // Essential for cookies
+    });
 
         if (isMounted.current) {
           if (response.ok) {

@@ -21,14 +21,14 @@ const ProtectedRoute = ({ children }) => {
 
     const checkAuth = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-          method: "GET",
-          credentials: "include",
-        });
-        
-        if (isMounted.current) {
-          setIsAuthenticated(response.ok);
-        }
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+      method: "GET",
+      credentials: "include", // Essential for cookies
+    });
+    
+    if (isMounted.current) {
+      setIsAuthenticated(response.ok);
+    }
       } catch (error) {
         console.error("Authentication check failed:", error);
         if (retryCount < MAX_RETRIES && isMounted.current) {

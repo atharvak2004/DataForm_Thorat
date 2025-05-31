@@ -39,9 +39,7 @@ export default function Login() {
         setLoading(false);
         return;
       }
-
       const data = await res.json();
-      saveToken(data.token);
       navigate("/");
     } catch (err) {
       setError("Network error or server unavailable.");
