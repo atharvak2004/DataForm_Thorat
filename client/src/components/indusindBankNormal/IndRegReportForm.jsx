@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import ImageCropper from "../ImageCropper";
 import FileInput from "../FileInput";
+const { vehicleNo } = useParams();
+
 function convertFormDataToRows(formData) {
   const headers = Object.keys(formData);
   const values = headers.map(key => formData[key] || "");
@@ -91,6 +94,26 @@ export default function IndRegReportForm({ onSubmit }) {
   const [editMode, setEditMode] = useState(false);
   const [rowIndex, setRowIndex] = useState(null);
   const [searchInput, setSearchInput] = useState("");
+
+  useEffect(() => {
+  if (vehicleNo) {
+    (async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/report1/find/${vehicleNo}`);
+        if (!res.ok) throw new Error("Vehicle not found");
+
+        const { rowData, rowIndex } = await res.json();
+        setFormData(rowData);
+        setRowIndex(rowIndex);
+        setEditMode(true);
+      } catch (err) {
+        console.error("Error fetching report:", err);
+        alert("Vehicle not found.");
+      }
+    })();
+  }
+}, [vehicleNo]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;

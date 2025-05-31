@@ -24,7 +24,7 @@ function App() {
       <main className="flex-grow">
         <Routes>
           <Route path="/login" element={<Login />} />
-          
+
           {/* Protected routes */}
           <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
           <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
@@ -37,6 +37,12 @@ function App() {
           <Route path="/otherbank" element={<ProtectedRoute><OtherBankReportPage /></ProtectedRoute>} />
           <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
           <Route path="/admin/create-user" element={<ProtectedRoute><AdminCreateUser /></ProtectedRoute>} />
+
+          <Route
+            path="/report1/view/:vehicleNo"
+            element={<ProtectedRoute><IndusindReportPage /></ProtectedRoute>}
+          />
+
         </Routes>
       </main>
 

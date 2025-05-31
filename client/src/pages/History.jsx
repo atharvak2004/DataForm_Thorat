@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ STEP 1
 
 export default function History() {
   const [reports, setReports] = useState([]);
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+  const navigate = useNavigate(); // ✅ STEP 2
 
-useEffect(() => {
-  fetch(`${API_URL}/history/latest`)
-    .then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch");
-      return res.json();
-    })
-    .then((data) => {
-      console.log("📄 Data from history API:", data);
-      setReports(data);
-    })
-    .catch((err) => console.error("Failed to load history:", err));
-}, []);
+  useEffect(() => {
+    fetch(`${API_URL}/history/latest`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch");
+        return res.json();
+      })
+      .then((data) => {
+        console.log("📄 Data from history API:", data);
+        setReports(data);
+      })
+      .catch((err) => console.error("Failed to load history:", err));
+  }, []);
 
   return (
     <div className="w-full h-full min-h-screen px-4 sm:px-8 py-6 bg-white">
@@ -40,9 +42,7 @@ useEffect(() => {
               <td className="border px-2 py-1">
                 <button
                   className="bg-blue-500 text-white px-2 py-1 rounded"
-                  onClick={() =>
-                    alert(`Navigate to /${r.sheet}/view/${r.vehicleNo}`)
-                  }
+                  onClick={() => navigate(`/${r.sheet}/view/${r.vehicleNo}`)}
                 >
                   View
                 </button>
