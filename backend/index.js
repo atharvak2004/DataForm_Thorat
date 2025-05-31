@@ -44,12 +44,18 @@
 // const PORT = process.env.PORT || 3000;
 // app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 const express = require('express');
-const fs = require('fs');  // You forgot this before, add it!
+const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
 
-// Just a simple route
+// Middleware
+app.use(express.json());
+
+// Sample Route
+const testRoutes = require('./routes/testRoutes');
+app.use('/test', testRoutes);
+
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
@@ -58,3 +64,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
