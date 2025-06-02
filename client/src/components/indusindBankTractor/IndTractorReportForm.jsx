@@ -145,9 +145,7 @@ export default function IndTractorReportForm({ onSubmit }) {
                 ? `${import.meta.env.VITE_API_URL}/report2/update/${rowIndex}`
                 : `${import.meta.env.VITE_API_URL}/report2`;
 
-            const body = editMode
-                ? JSON.stringify({ values: [values] })
-                : JSON.stringify({ values: [values], rawFormData: formData });
+            const body = JSON.stringify({ values: [values], rawFormData: formData });
 
             const response = await fetch(url, {
                 method: "POST",
