@@ -69,7 +69,7 @@ export default function Profile() {
 
   const toggleChangePassword = () => {
     setShowChangePassword((prev) => {
-      if (prev) setMessage(""); // clear message on cancel
+      if (prev) setMessage(""); 
       return !prev;
     });
   };

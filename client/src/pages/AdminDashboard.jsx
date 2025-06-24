@@ -17,7 +17,7 @@ function AdminDashboard() {
     useEffect(() => {
         const fetchReports = async () => {
             try {
-                const response = await fetch(`${API_URL}/admin/reports`, {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/reports`, {
                     credentials: 'include'
                 });
 
@@ -39,7 +39,7 @@ function AdminDashboard() {
 
     const updateStatus = async (reportId, stage) => {
         try {
-            const response = await fetch(`${API_URL}/admin/reports/${reportId}/status`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/reports/${reportId}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ stage }),
@@ -68,7 +68,7 @@ function AdminDashboard() {
 
     const updatePaymentStatus = async (reportId, paymentStatus) => {
         try {
-            const response = await fetch(`${API_URL}/admin/reports/${reportId}/status`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/reports/${reportId}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ paymentStatus }),
