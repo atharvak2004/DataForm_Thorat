@@ -15,14 +15,14 @@ export default function Profile() {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
           method: "GET",
-          credentials: "include", // Required for sending cookies
+          credentials: "include",
         });
 
         if (res.ok) {
           const data = await res.json();
           setUser(data.user);
         } else {
-          setUser(null); // triggers fallback UI
+          setUser(null); 
         }
       } catch (err) {
         console.error("Failed to fetch user", err);
@@ -51,7 +51,7 @@ export default function Profile() {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          email: user.email, // ✅ Fix added
+          email: user.email, 
           currentPassword: form.currentPassword,
           newPassword: form.newPassword,
         }),

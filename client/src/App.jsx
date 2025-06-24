@@ -1,4 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
+import { UserProvider } from "./components/UserContext";
+
 import Home from './pages/Home';
 import About from './pages/About';
 import Navbar from './components/Navbar';
@@ -15,39 +17,200 @@ import Login from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminCreateUser from "./pages/AdminCreateUser";
 import ChangePassword from "./pages/ChangePassword";
+import AdminDashboard from './pages/AdminDashboard';
+import Sidebar from './components/Sidebar';
+import Layout from './components/Layout';
+
+import UserHome from './pages/Homes/UserHome';
+import BankUserHome from './pages/Homes/BankUserHome';
+import AdminHome from './pages/Homes/AdminHome';
+import EmployeeHome from './pages/Homes/EmployeeHome';
+
+import UserReportForm from './components/UserReportForm'
+import BankUserReportForm from './components/BankUserReportForm'
 
 function App() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
+    <UserProvider>
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
 
-      <main className="flex-grow">
-        <Routes>
-          <Route path="/login" element={<Login />} />
+        <main className="flex-grow">
+          <Routes>
 
-          {/* Protected routes */}
-          <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-          <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
-          <Route path="/indusindbank" element={<ProtectedRoute><IndusindReportPage /></ProtectedRoute>} />
-          <Route path="/indusindtractor" element={<ProtectedRoute><IndusindTractorPage /></ProtectedRoute>} />
-          <Route path="/equitasbank" element={<ProtectedRoute><EquitasBankReportPage /></ProtectedRoute>} />
-          <Route path="/kotakbank" element={<ProtectedRoute><KotakBankReportPage /></ProtectedRoute>} />
-          <Route path="/otherbank" element={<ProtectedRoute><OtherBankReportPage /></ProtectedRoute>} />
-          <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
-          <Route path="/admin/create-user" element={<ProtectedRoute><AdminCreateUser /></ProtectedRoute>} />
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/login" element={<Login />} />
 
-          <Route
-            path="/report1/view/:vehicleNo"
-            element={<ProtectedRoute><IndusindReportPage /></ProtectedRoute>}
-          />
+            {/* Protected Routes */}
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
 
-        </Routes>
-      </main>
+            <Route
+              path="/change-password"
+              element={
+                <ProtectedRoute>
+                  <ChangePassword />
+                </ProtectedRoute>
+              }
+            />
 
-      <Footer />
-    </div>
+            <Route
+              path="/indusindbank"
+              element={
+                <ProtectedRoute>
+                  <IndusindReportPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/indusindtractor"
+              element={
+                <ProtectedRoute>
+                  <IndusindTractorPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/equitasbank"
+              element={
+                <ProtectedRoute>
+                  <EquitasBankReportPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/kotakbank"
+              element={
+                <ProtectedRoute>
+                  <KotakBankReportPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/otherbank"
+              element={
+                <ProtectedRoute>
+                  <OtherBankReportPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/report1/view/:vehicleNo"
+              element={
+                <ProtectedRoute>
+                  <IndusindReportPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/user/home"
+              element={
+                <ProtectedRoute>
+                  <UserHome />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/bankuser/home"
+              element={
+                <ProtectedRoute>
+                  <BankUserHome />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/home"
+              element={
+                <ProtectedRoute>
+                  <AdminHome />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/employee/home"
+              element={
+                <ProtectedRoute>
+                  <EmployeeHome />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/userreportform"
+              element={
+                <ProtectedRoute>
+                  <UserReportForm />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/bankuserreportform"
+              element={
+                <ProtectedRoute>
+                  <BankUserReportForm />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin Nested Routes under /admin */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route
+                path="dashboard"
+                element={
+                  <ProtectedRoute>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="history"
+                element={
+                  <ProtectedRoute>
+                    <History />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="create-user"
+                element={
+                  <ProtectedRoute>
+                    <AdminCreateUser />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+
+          </Routes>
+        </main>
+
+        <Footer />
+      </div>
+    </UserProvider>
   );
 }
 

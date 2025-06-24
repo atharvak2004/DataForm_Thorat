@@ -31,7 +31,7 @@ const corsOptions = {
             if (domain instanceof RegExp) return domain.test(origin);
             return false;
         })) {
-            callback(null, origin); // Return the specific origin
+            callback(null, origin); 
         } else {
             callback(new Error('Not allowed by CORS'));
         }
@@ -72,6 +72,8 @@ const report4Routes = require("./routes/report4Routes");
 const report5Routes = require("./routes/report5Routes");
 const historyRoutes = require("./routes/historyRoutes");
 const authRoutes = require("./routes/authRoutes");
+const statusRoutes = require('./routes/statusRoutes');
+
 
 app.use("/report1", report1Routes);
 app.use("/report2", report2Routes);
@@ -80,10 +82,11 @@ app.use("/report4", report4Routes);
 app.use("/report5", report5Routes);
 app.use("/history", historyRoutes);
 app.use("/auth", authRoutes);
+app.use('/admin', statusRoutes);
 
 // Test route
 app.get("/health", (req, res) => {
-  res.status(200).json({ status: "ok", timestamp: new Date() });
+    res.status(200).json({ status: "ok", timestamp: new Date() });
 });
 
 const PORT = process.env.PORT || 3000;

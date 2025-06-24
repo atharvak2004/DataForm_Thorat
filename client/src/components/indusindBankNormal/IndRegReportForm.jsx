@@ -96,23 +96,23 @@ export default function IndRegReportForm({ onSubmit }) {
   const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
-  if (vehicleNo) {
-    (async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/report1/find/${vehicleNo}`);
-        if (!res.ok) throw new Error("Vehicle not found");
+    if (vehicleNo) {
+      (async () => {
+        try {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/report1/find/${vehicleNo}`);
+          if (!res.ok) throw new Error("Vehicle not found");
 
-        const { rowData, rowIndex } = await res.json();
-        setFormData(rowData);
-        setRowIndex(rowIndex);
-        setEditMode(true);
-      } catch (err) {
-        console.error("Error fetching report:", err);
-        alert("Vehicle not found.");
-      }
-    })();
-  }
-}, [vehicleNo]);
+          const { rowData, rowIndex } = await res.json();
+          setFormData(rowData);
+          setRowIndex(rowIndex);
+          setEditMode(true);
+        } catch (err) {
+          console.error("Error fetching report:", err);
+          alert("Vehicle not found.");
+        }
+      })();
+    }
+  }, [vehicleNo]);
 
 
   const handleChange = (e) => {
@@ -532,10 +532,11 @@ export default function IndRegReportForm({ onSubmit }) {
         </span>
 
 
+        {/* Chassis Section */}
         <span className="flex flex-col space-y-3 text-left p-5 border border-black bg-white">
-          <h2 className="text-3xl font-bold mb-5 ">Section I: Chassis Number Impression/ Photo</h2>
+          <h2 className="text-3xl font-bold mb-5">Section I: Chassis Number Impression/ Photo</h2>
+          <h4 className="text-2xl font-semibold">Chassis Number Image</h4>
 
-          <h4 className="text-2xl font-semibold ">Chassis Number Image</h4>
           {currentPage === "crop-img" && selectedImageKey === "chassisImage" ? (
             <ImageCropper
               image={image}
@@ -575,6 +576,7 @@ export default function IndRegReportForm({ onSubmit }) {
           )}
         </span>
 
+
         <span className="flex flex-col space-y-3 text-left p-5 border border-black bg-white">
           <h2 className="text-3xl font-bold mb-5 ">Section J: Online Status of Vehicle</h2>
 
@@ -593,64 +595,62 @@ export default function IndRegReportForm({ onSubmit }) {
           <input className='border border-red-600 rounded-lg p-2 ' type="number" id="valuation" name="valuation" placeholder="valuation" value={formData.valuation} onChange={handleChange} />
         </span>
 
-        <span className="flex flex-col space-y-3 text-left p-5 border border-black bg-white">
-          <h2 className="text-3xl font-bold mb-5 ">Images Section:</h2>
-          {[...Array(8)].map((_, i) => {
-            const key = `image${i + 1}`;
-            const page = i < 4 ? 'Page4' : 'Page5';
+        {[...Array(8)].map((_, i) => {
+          const key = `image${i + 1}`;
+          const page = i < 4 ? 'Page4' : 'Page5';
 
-            return (
-              <div key={key} className="mb-6">
-                <h5 className="text-xl font-semibold">Image {i % 4 + 1} ({page})</h5>
+          return (
+            <div key={key} className="mb-6">
+              <h5 className="text-xl font-semibold">Image {i % 4 + 1} ({page})</h5>
 
-                {currentPage === "crop-img" && selectedImageKey === key ? (
-                  <ImageCropper
-                    image={image}
-                    onCropDone={onCropDone}
-                    onCropCancel={onCropCancel}
-                    vehicleNo={formData.vehicleNo}
-                    imageKey={key}
-                  />
-                ) : (
-                  <div>
-                    <FileInput onImageSelected={(img) => onGeneralImageSelected(img, key)} />
+              {currentPage === "crop-img" && selectedImageKey === key ? (
+                <ImageCropper
+                  image={image}
+                  onCropDone={onCropDone}
+                  onCropCancel={onCropCancel}
+                  vehicleNo={formData.vehicleNo}
+                  imageKey={key}
+                />
+              ) : (
+                <div>
+                  <FileInput onImageSelected={(img) => onGeneralImageSelected(img, key)} />
 
-                    {formData[key] && (
-                      <div className="mt-2">
-                        <img
-                          src={formData[key]}
-                          alt={`Preview of ${key}`}
-                          className="w-48 h-auto rounded shadow"
-                        />
-                        <p>Preview of cropped {key}</p>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setImage(formData[key]);
-                            setSelectedImageKey(key);
-                            setCurrentPage("crop-img");
-                          }}
-                          className="bg-blue-500 text-white p-2 rounded mt-2 mr-4"
-                        >
-                          Crop Again
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setFormData((prev) => ({ ...prev, [key]: "" }));
-                          }}
-                          className="bg-gray-400 text-white p-2 rounded mt-2"
-                        >
-                          Upload New Image
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </span>
+                  {formData[key] && (
+                    <div className="mt-2">
+                      <img
+                        src={formData[key]}
+                        alt={`Preview of ${key}`}
+                        className="w-48 h-auto rounded shadow"
+                      />
+                      <p>Preview of cropped {key}</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImage(formData[key]);
+                          setSelectedImageKey(key);
+                          setCurrentPage("crop-img");
+                        }}
+                        className="bg-blue-500 text-white p-2 rounded mt-2 mr-4"
+                      >
+                        Crop Again
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData((prev) => ({ ...prev, [key]: "" }));
+                        }}
+                        className="bg-gray-400 text-white p-2 rounded mt-2"
+                      >
+                        Upload New Image
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+
         <button type="submit" className="bg-blue-500 w-4/12 rounded-xl p-2 mt-2">
           Generate PDF
         </button>

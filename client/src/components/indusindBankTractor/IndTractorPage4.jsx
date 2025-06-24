@@ -3,7 +3,7 @@ import { Page, View, Image, StyleSheet } from "@react-pdf/renderer";
 const styles = StyleSheet.create({
   page: {
     fontSize: 10,
-    padding: 33,
+    padding: 40,
     lineHeight: 1.2,
     backgroundColor: 'white',
     width: '210mm',
@@ -24,24 +24,21 @@ const styles = StyleSheet.create({
   },
   imageBox: {
     width: "48%",
-    aspectRatio: 4 / 3,
-    marginBottom: 10,
-    position: "relative",
-    marginTop: 40,
+    height: "48%",  
+    marginBottom: "2%",
     backgroundColor: "#f0f0f0",
+    position: "relative",
     justifyContent: "center",
     alignItems: "center",
   },
-
   image: {
-    maxWidth: "100%",
-    maxHeight: "100%",
+    width: "100%",
+    height: "100%",
     objectFit: "contain",
   },
-
-  stampWrapper: {
+ stampWrapper: {
     position: "absolute",
-    top: "25%",
+    top: "40%",
     left: "40%",
     transform: "translate(-50%, -50%)",
     width: 200,

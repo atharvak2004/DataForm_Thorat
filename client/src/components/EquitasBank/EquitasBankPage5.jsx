@@ -1,3 +1,4 @@
+
 import { Page, View, Image, StyleSheet } from "@react-pdf/renderer";
 
 const styles = StyleSheet.create({
@@ -14,8 +15,9 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "flex-start",
+    justifyContent: "center", 
     gap: 10,
+    height: "100%",
   },
   outerBorder: {
     border: '2pt solid black',
@@ -23,9 +25,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imageBox: {
-    aspectRatio: 4 / 3,
-    marginBottom: 10,
-    marginTop: 10,
+    aspectRatio: 3 / 4,
     backgroundColor: "#f0f0f0",
     justifyContent: "center",
     alignItems: "center",
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   image: {
     maxWidth: "100%",
     maxHeight: "100%",
-    objectFit: "contain",
+    objectFit: "cover",
     zIndex: 10,
   },
   stampWrapper: {
@@ -52,73 +52,81 @@ const EquitasBankPage5 = ({ data }) => {
   const images = [data.image5, data.image6, data.image7, data.image8].filter(Boolean);
   const numImages = images.length;
 
-
-  const getBoxWidth = () => {
-    if (numImages == 1) {
-      return "100%";
+  const getBoxStyle = () => {
+    if (numImages === 1) {
+      return {
+        width: "70%",
+        height: "90%",
+        marginTop: 0,
+        marginBottom: 0,
+      };
     }
-    if (numImages == 2) {
-      return "85%";
+    if (numImages === 2) {
+      return {
+        width: "50%",
+        height: "25%",
+        marginBottom: "4%",
+      };
     }
-    if (numImages == 3 || numImages == 4) {
-      return "49%";
+    if (numImages === 3 || numImages === 4) {
+      return {
+        width: "48%",
+        height: "auto",
+        marginBottom: 10,
+      };
     }
+    return {};
   };
 
   const getStampPosition = () => {
-
-    if (numImages == 1) {
+    if (numImages === 1) {
       return {
         position: "absolute",
-        top: "40%",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 200,
+        height: 200,
+      };
+    }
+    if (numImages === 2) {
+      return {
+        position: "absolute",
+        top: "41%",
         left: "40%",
         transform: "translate(-50%, -50%)",
         width: 200,
         height: 200,
       };
     }
-    if (numImages == 2) {
-      return {
-        position: "absolute",
-        top: "35%",
-        left: "40%",
-        transform: "translate(-50%, -50%)",
-        width: 200,
-        height: 200,
-      };
-    }
-    else {
-      return {
-        position: "absolute",
-        top: "25%",
-        left: "40%",
-        transform: "translate(-50%, -50%)",
-        width: 200,
-        height: 200,
-      };
-    }
+    return {
+      position: "absolute",
+      top: "35%",
+      left: "40%",
+      transform: "translate(-50%, -50%)",
+      width: 200,
+      height: 200,
+    };
   };
-
 
   return (
     <Page size="A4" style={styles.page}>
       <View style={styles.outerBorder}>
-
         <View style={styles.gridContainer}>
           {images.map((src, index) => (
-            <View key={index} style={[styles.imageBox, { width: getBoxWidth() }]}>
+            <View key={index} style={[styles.imageBox, getBoxStyle()]}>
               <Image style={styles.image} src={src} />
             </View>
           ))}
         </View>
 
-        <View style={[ getStampPosition()]}>
+        <View style={[getStampPosition()]}>
           <Image style={styles.stamp} src="/assets/Stamp_img.png" />
         </View>
-
       </View>
     </Page>
   );
 };
 
 export default EquitasBankPage5;
+

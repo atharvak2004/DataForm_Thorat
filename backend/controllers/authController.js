@@ -45,7 +45,7 @@ exports.signup = async (req, res) => {
     return res.status(400).send("User already exists.");
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10); 
 
   const requiredHeaders = ["email", "password", "role"];
   const syncedHeaders = [...headers];
@@ -90,11 +90,11 @@ exports.login = async (req, res) => {
     expiresIn: "1d",
   });
   res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,
-  sameSite: "none", 
-  maxAge: 24 * 60 * 60 * 1000,
-});
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+
   res.json({
     success: true,
     role: user.role,
@@ -146,32 +146,32 @@ exports.getCurrentUser = async (req, res) => {
   try {
     if (!req) {
       console.error("getCurrentUser: req object is undefined");
-      return res.status(500).json({ 
-        user: null, 
-        message: "Internal server error" 
+      return res.status(500).json({
+        user: null,
+        message: "Internal server error"
       });
     }
     const token = req.cookies?.token;
-    
+
     if (!token) {
       return res.status(401).json({ user: null });
     }
 
     const decoded = jwt.verify(token, SECRET);
 
-    const { users } = await getUsers(true); 
-    
+    const { users } = await getUsers(true);
+
     const user = users.find(u => u.email === decoded.email);
-    
+
     if (!user) {
-      return res.status(404).json({ 
-        user: null, 
-        message: "User not found" 
+      return res.status(404).json({
+        user: null,
+        message: "User not found"
       });
     }
     const { password, ...userData } = user;
     res.json({ user: userData });
-    
+
   } catch (err) {
     if (err.name === "TokenExpiredError") {
       res.clearCookie("token", {
@@ -179,28 +179,28 @@ exports.getCurrentUser = async (req, res) => {
         secure: process.env.NODE_ENV === "production",
         sameSite: "none",
       });
-      return res.status(401).json({ 
-        user: null, 
-        message: "Session expired" 
+      return res.status(401).json({
+        user: null,
+        message: "Session expired"
       });
     }
-    
+
     if (err.name === "JsonWebTokenError") {
       res.clearCookie("token", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "none",
       });
-      return res.status(401).json({ 
-        user: null, 
-        message: "Invalid token" 
+      return res.status(401).json({
+        user: null,
+        message: "Invalid token"
       });
     }
-    
+
     console.error("Error getting current user:", err);
-    res.status(500).json({ 
-      user: null, 
-      message: "Server error" 
+    res.status(500).json({
+      user: null,
+      message: "Server error"
     });
   }
 };

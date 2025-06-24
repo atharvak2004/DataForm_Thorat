@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import ImageCropper from "../ImageCropper";
 import FileInput from "../FileInput";
+
 function convertFormDataToRows(formData) {
-  const headers = Object.keys(formData); // Now includes all keys
-  const values = headers.map(key => formData[key] || ""); // Explicitly map all headers
+  const headers = Object.keys(formData);
+  const values = headers.map(key => formData[key] || ""); 
   return { headers, rows: [values] };
 }
 
@@ -95,7 +96,7 @@ export default function IndRegReportForm({ onSubmit }) {
   const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
-    console.log("📦 formData updated:", formData);
+    console.log("formData updated:", formData);
   }, [formData]);
 
   const handleChange = (e) => {

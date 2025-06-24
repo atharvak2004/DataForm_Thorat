@@ -48,7 +48,7 @@ export default function AdminCreateUser() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // include cookies
+        credentials: "include",
         body: JSON.stringify(form),
       });
 
@@ -90,8 +90,10 @@ export default function AdminCreateUser() {
           onChange={handleChange}
           className="w-full border px-3 py-2 rounded"
         >
-          <option value="user">User</option>
           <option value="admin">Admin</option>
+          <option value="employee">Employee</option>
+          <option value="bankuser">BankUser</option>
+          <option value="user">User</option>
         </select>
 
         <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">

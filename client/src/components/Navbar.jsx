@@ -8,7 +8,6 @@ export default function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    // Only fetch user if not already loaded
     if (user === null) {
       const fetchUser = async () => {
         try {
@@ -34,7 +33,7 @@ export default function Navbar() {
     try {
       await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
         method: "POST",
-        credentials: "include", 
+        credentials: "include",
       });
       setUser(null);
       setMobileMenuOpen(false);
@@ -54,8 +53,11 @@ export default function Navbar() {
         {/* Desktop menu */}
         <div className="hidden md:flex space-x-6 items-center">
           <Link to="/" className="hover:text-yellow-300">Home</Link>
-          <Link to="/history" className="hover:text-yellow-300">Previous Reports</Link>
+          {user?.role === "admin" && (
+            <Link to="/admin/dashboard" className="hover:text-yellow-300">Admin Panel</Link>
+          )}
         </div>
+
 
         <div className="hidden md:flex space-x-6 items-center">
           {user && (
@@ -65,12 +67,7 @@ export default function Navbar() {
             <Link to="/login" className="hover:text-yellow-300">Login</Link>
           )}
           {user && (
-            <>
-              {user.role === "admin" && (
-                <Link to="/admin/create-user" className="hover:text-yellow-300">Add User</Link>
-              )}
-              <button onClick={handleLogout} className="hover:text-yellow-300">Logout</button>
-            </>
+            <button onClick={handleLogout} className="hover:text-yellow-300">Logout</button>
           )}
         </div>
 
