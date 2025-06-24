@@ -90,10 +90,11 @@ exports.login = async (req, res) => {
     expiresIn: "1d",
   });
   res.cookie("token", token, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-  });
+  httpOnly: true,
+  secure: true,        
+  sameSite: "None",  
+});
+
 
   res.json({
     success: true,
