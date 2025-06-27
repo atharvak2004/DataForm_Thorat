@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   },
   imageBox: {
     width: "48%",
-    height: "40%",  
+    height: "44%",  
     marginBottom: "2%",
     backgroundColor: "#f0f0f0",
     position: "relative",
