@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   },
   imageBox: {
     width: "48%",
-    height: "45%",  
+    height: "40%",  
     marginBottom: "2%",
     backgroundColor: "#f0f0f0",
     position: "relative",
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: "90%",
+    height: "100%",
     objectFit: "contain",
   },
  stampWrapper: {
