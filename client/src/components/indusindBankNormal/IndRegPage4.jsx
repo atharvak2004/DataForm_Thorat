@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imageBox: {
-    width: '48%',
-    height: 250, 
+   width: '48%',
+    height: 350, 
     marginBottom: 8,
     backgroundColor: "#f0f0f0",
     justifyContent: "center",
